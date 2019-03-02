@@ -1,3 +1,5 @@
+import {getRandomNumber, getRandomString} from './util';
+
 const Restrictions = {
   RATING: {
     MIN: 1,
@@ -64,33 +66,29 @@ const DESCRIPTION = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr
 
 const COMMENTS = [`comment`, `big comment`, `small comment`, `good comment`, ` bad comment`];
 
-const randomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
-
-const randomString = (strings) => strings[randomNumber(0, strings.length - 1)];
-
-const randomComments = () => {
-  const comments = new Array(randomNumber(0, Restrictions.MAX_COMMENTS))
+const getRandomComments = () => {
+  const comments = new Array(getRandomNumber(0, Restrictions.MAX_COMMENTS))
                 .fill()
-                .map(() => COMMENTS[randomNumber(0, COMMENTS.length - 1)]);
+                .map(() => COMMENTS[getRandomNumber(0, COMMENTS.length - 1)]);
   return comments;
 };
 
-const randomDescription = () => {
+const getRandomDescription = () => {
   return new Array(Restrictions.DESCRIPTION_LENGTH)
           .fill()
-          .map(() => DESCRIPTION[randomNumber(0, DESCRIPTION.length - 1)])
+          .map(() => DESCRIPTION[getRandomNumber(0, DESCRIPTION.length - 1)])
           .join(` `);
 };
 
 export const getRandomFilm = () => {
   return {
-    title: randomString(TITLES),
-    rating: randomNumber(Restrictions.RATING.MIN, Restrictions.RATING.MAX),
-    year: randomNumber(Restrictions.YEAR.MIN, Restrictions.YEAR.MAX),
-    duration: randomNumber(Restrictions.DURATION.MIN, Restrictions.DURATION.MAX),
-    genre: randomString(GENRES),
-    description: randomDescription(),
-    poster: randomString(POSTERS),
-    comments: randomComments(),
+    title: getRandomString(TITLES),
+    rating: getRandomNumber(Restrictions.RATING.MIN, Restrictions.RATING.MAX),
+    year: getRandomNumber(Restrictions.YEAR.MIN, Restrictions.YEAR.MAX),
+    duration: getRandomNumber(Restrictions.DURATION.MIN, Restrictions.DURATION.MAX),
+    genre: getRandomString(GENRES),
+    description: getRandomDescription(),
+    poster: getRandomString(POSTERS),
+    comments: getRandomComments(),
   };
 };
