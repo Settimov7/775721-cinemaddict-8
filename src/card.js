@@ -12,7 +12,12 @@ const ClassName = {
   CONTAINER: `films-list__container`
 };
 
-const filmsContainer = document.querySelectorAll(`.${ ClassName.CONTAINER }`);
+const filmsContainers = document.querySelectorAll(`.${ ClassName.CONTAINER }`);
+const Container = {
+  DEFAULT: filmsContainers[0],
+  TOP_RATED: filmsContainers[1],
+  MOST_COMMENTED: filmsContainers[2]
+};
 
 const calcHours = (duration) => Math.floor(duration / MINUTES_IN_HOUR);
 const calcMinutes = (duration) => duration - calcHours(duration) * MINUTES_IN_HOUR;
@@ -49,11 +54,11 @@ const createCards = (quantity) => {
 };
 
 export const renderCards = (quantity) => {
-  filmsContainer[0].innerHTML = createCards(quantity);
+  Container.DEFAULT.innerHTML = createCards(quantity);
 };
 
 export const renderDefaultCards = () => {
-  filmsContainer[0].innerHTML = createCards(Quantity.CARDS);
+  Container.DEFAULT.innerHTML = createCards(Quantity.CARDS);
 };
 
 const createExtraCard = ({title, rating, year, duration, genre, poster, comments}) =>
@@ -82,11 +87,11 @@ const createExtraCards = (quantity) => {
 };
 
 export const renderTopRated = () => {
-  filmsContainer[1].innerHTML = createExtraCards(Quantity.TOP);
+  Container.TOP_RATED.innerHTML = createExtraCards(Quantity.TOP);
 };
 
 export const renderMostCommented = () => {
-  filmsContainer[2].innerHTML = createExtraCards(Quantity.MOST_COMMENTED);
+  Container.MOST_COMMENTED.innerHTML = createExtraCards(Quantity.MOST_COMMENTED);
 };
 
 export const changeCards = (quantity = Quantity.CARDS) => {
