@@ -1,111 +1,99 @@
-const DEAFAULT_QUANTITY = 7;
-const TOP_QUANTITY = 2;
-const MOST_COMMENTED_QUANTITY = 2;
+import {getRandomFilm} from './data';
+
+const Quantity = {
+  CARDS: 7,
+  TOP: 2,
+  MOST_COMMENTED: 2
+};
+
+const MINUTES_IN_HOUR = 60;
 
 const ClassName = {
   CONTAINER: `films-list__container`
 };
 
-const filmsContainer = document.querySelectorAll(`.${ ClassName.CONTAINER }`);
+const filmsContainers = document.querySelectorAll(`.${ ClassName.CONTAINER }`);
+const Container = {
+  DEFAULT: filmsContainers[0],
+  TOP_RATED: filmsContainers[1],
+  MOST_COMMENTED: filmsContainers[2]
+};
 
-const createCard = ({title, rating, year, duration: {hours, minutes}, genre, img: {path, alt}, description, comments}) =>
-  `<article class="film-card">
-    <h3 class="film-card__title">${ title }</h3>
-    <p class="film-card__rating">${ rating }</p>
-    <p class="film-card__info">
-      <span class="film-card__year">${ year }</span>
-      <span class="film-card__duration">${ hours }h&nbsp;${ minutes }m</span>
-      <span class="film-card__genre">${ genre }</span>
-    </p>
-    <img src="${ path }" alt="${ alt }" class="film-card__poster">
-    <p class="film-card__description">${ description }</p>
-    <button class="film-card__comments">${ comments } comments</button>
+const calcHours = (duration) => Math.floor(duration / MINUTES_IN_HOUR);
+const calcMinutes = (duration) => duration - calcHours(duration) * MINUTES_IN_HOUR;
 
-    <form class="film-card__controls">
-      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-      <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
-    </form>
-  </article>`;
+const createCard = ({title, rating, year, duration, genre, poster, description, comments}) => {
+  return `<article class="film-card">
+      <h3 class="film-card__title">${ title }</h3>
+      <p class="film-card__rating">${ rating }</p>
+      <p class="film-card__info">
+        <span class="film-card__year">${ year }</span>
+        <span class="film-card__duration">${ calcHours(duration) }h&nbsp;${ calcMinutes(duration) }m</span>
+        <span class="film-card__genre">${ genre }</span>
+      </p>
+      <img src="${ poster }" alt="${ title }" class="film-card__poster">
+      <p class="film-card__description">${ description }</p>
+      <button class="film-card__comments">${ comments.length } comments</button>
 
-const createExtraCard = ({title, rating, year, duration: {hours, minutes}, genre, img: {path, alt}, comments}) =>
+      <form class="film-card__controls">
+        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
+        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
+        <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
+      </form>
+    </article>`;
+};
+
+const createCards = (quantity) => {
+  let cards = ``;
+
+  for (let i = 0; i < quantity; i++) {
+    cards += createCard(getRandomFilm());
+  }
+
+  return cards;
+};
+
+export const renderCards = (quantity) => {
+  Container.DEFAULT.innerHTML = createCards(quantity);
+};
+
+export const renderDefaultCards = () => {
+  Container.DEFAULT.innerHTML = createCards(Quantity.CARDS);
+};
+
+const createExtraCard = ({title, rating, year, duration, genre, poster, comments}) =>
   `<article class="film-card film-card--no-controls">
     <h3 class="film-card__title">${ title }</h3>
     <p class="film-card__rating">${ rating }</p>
     <p class="film-card__info">
       <span class="film-card__year">${ year }</span>
-      <span class="film-card__duration">${ hours }h&nbsp;${ minutes }m</span>
+      <span class="film-card__duration">${ calcHours(duration) }h&nbsp;${ calcMinutes(duration) }m</span>
       <span class="film-card__genre">${ genre }</span>
     </p>
 
-    <img src="${ path }" alt="${ alt }" class="film-card__poster">
+    <img src="${ poster }" alt="${ title }" class="film-card__poster">
 
-    <button class="film-card__comments">${ comments } comments</button>
+    <button class="film-card__comments">${ comments.length } comments</button>
   </article>`;
 
-export const renderCards = (quantity = DEAFAULT_QUANTITY) => {
-  filmsContainer[0].innerHTML = ``;
+const createExtraCards = (quantity) => {
+  let cards = ``;
 
   for (let i = 0; i < quantity; i++) {
-    filmsContainer[0].insertAdjacentHTML(`afterBegin`, createCard({
-      title: `The Assassination Of Jessie James By The Coward Robert Ford`,
-      rating: 9.8,
-      year: 2018,
-      duration: {
-        hours: 1,
-        minutes: 13
-      },
-      genre: `Comedy`,
-      img: {
-        path: `./images/posters/three-friends.jpg`,
-        alt: ``
-      },
-      description: `A priest with a haunted past and a novice on the threshold of her final vows are sent by the Vatican to investigate the death of a young nun in Romania and confront a malevolent force in the form of a demonic nun.`,
-      comments: 13
-    }));
+    cards += createExtraCard(getRandomFilm());
   }
+
+  return cards;
 };
 
 export const renderTopRated = () => {
-  for (let i = 0; i < TOP_QUANTITY; i++) {
-    filmsContainer[1].insertAdjacentHTML(`afterBegin`, createExtraCard({
-      title: `The Assassination Of Jessie James By The Coward Robert Ford`,
-      rating: 9.8,
-      year: 2018,
-      duration: {
-        hours: 1,
-        minutes: 13
-      },
-      genre: `Comedy`,
-      img: {
-        path: `./images/posters/three-friends.jpg`,
-        alt: ``
-      },
-      comments: 13
-    }));
-  }
+  Container.TOP_RATED.innerHTML = createExtraCards(Quantity.TOP);
 };
 
 export const renderMostCommented = () => {
-  for (let i = 0; i < MOST_COMMENTED_QUANTITY; i++) {
-    filmsContainer[2].insertAdjacentHTML(`afterBegin`, createExtraCard({
-      title: `The Assassination Of Jessie James By The Coward Robert Ford`,
-      rating: 9.8,
-      year: 2018,
-      duration: {
-        hours: 1,
-        minutes: 13
-      },
-      genre: `Comedy`,
-      img: {
-        path: `./images/posters/three-friends.jpg`,
-        alt: ``
-      },
-      comments: 13
-    }));
-  }
+  Container.MOST_COMMENTED.innerHTML = createExtraCards(Quantity.MOST_COMMENTED);
 };
 
-export const changeCards = (quantity) => {
+export const changeCards = (quantity = Quantity.CARDS) => {
   renderCards(quantity);
 };
