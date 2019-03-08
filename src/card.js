@@ -1,4 +1,8 @@
+import {ClassName} from './util';
 import {getRandomFilm} from './data';
+
+import Film from './film';
+import ExtraFilm from './extra-film';
 
 const Quantity = {
   CARDS: 7,
@@ -6,92 +10,63 @@ const Quantity = {
   MOST_COMMENTED: 2
 };
 
-const MINUTES_IN_HOUR = 60;
-
-const ClassName = {
-  CONTAINER: `films-list__container`
-};
-
-const filmsContainers = document.querySelectorAll(`.${ ClassName.CONTAINER }`);
+const filmsContainers = document.querySelectorAll(`.${ ClassName.FILMS_LIST }`);
 const Container = {
   DEFAULT: filmsContainers[0],
   TOP_RATED: filmsContainers[1],
   MOST_COMMENTED: filmsContainers[2]
 };
 
-const calcHours = (duration) => Math.floor(duration / MINUTES_IN_HOUR);
-const calcMinutes = (duration) => duration - calcHours(duration) * MINUTES_IN_HOUR;
-
-const createCard = ({title, rating, year, duration, genre, poster, description, comments}) => {
-  return `<article class="film-card">
-      <h3 class="film-card__title">${ title }</h3>
-      <p class="film-card__rating">${ rating }</p>
-      <p class="film-card__info">
-        <span class="film-card__year">${ year }</span>
-        <span class="film-card__duration">${ calcHours(duration) }h&nbsp;${ calcMinutes(duration) }m</span>
-        <span class="film-card__genre">${ genre }</span>
-      </p>
-      <img src="${ poster }" alt="${ title }" class="film-card__poster">
-      <p class="film-card__description">${ description }</p>
-      <button class="film-card__comments">${ comments.length } comments</button>
-
-      <form class="film-card__controls">
-        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
-      </form>
-    </article>`;
-};
-
 const createCards = (quantity) => {
-  let cards = ``;
+  let cards = document.createDocumentFragment();
 
   for (let i = 0; i < quantity; i++) {
-    cards += createCard(getRandomFilm());
+    cards.appendChild(new Film(getRandomFilm()).render());
   }
 
   return cards;
 };
 
 export const renderCards = (quantity) => {
-  Container.DEFAULT.innerHTML = createCards(quantity);
+  const newFilmsContainer = Container.DEFAULT.cloneNode(false);
+
+  newFilmsContainer.appendChild(createCards(quantity));
+  Container.DEFAULT.parentElement.replaceChild(newFilmsContainer, Container.DEFAULT);
+  Container.DEFAULT = newFilmsContainer;
 };
 
 export const renderDefaultCards = () => {
-  Container.DEFAULT.innerHTML = createCards(Quantity.CARDS);
+  const newFilmsContainer = Container.DEFAULT.cloneNode(false);
+
+  newFilmsContainer.appendChild(createCards(Quantity.CARDS));
+  Container.DEFAULT.parentElement.replaceChild(newFilmsContainer, Container.DEFAULT);
+  Container.DEFAULT = newFilmsContainer;
 };
 
-const createExtraCard = ({title, rating, year, duration, genre, poster, comments}) =>
-  `<article class="film-card film-card--no-controls">
-    <h3 class="film-card__title">${ title }</h3>
-    <p class="film-card__rating">${ rating }</p>
-    <p class="film-card__info">
-      <span class="film-card__year">${ year }</span>
-      <span class="film-card__duration">${ calcHours(duration) }h&nbsp;${ calcMinutes(duration) }m</span>
-      <span class="film-card__genre">${ genre }</span>
-    </p>
-
-    <img src="${ poster }" alt="${ title }" class="film-card__poster">
-
-    <button class="film-card__comments">${ comments.length } comments</button>
-  </article>`;
-
 const createExtraCards = (quantity) => {
-  let cards = ``;
+  let cards = document.createDocumentFragment();
 
   for (let i = 0; i < quantity; i++) {
-    cards += createExtraCard(getRandomFilm());
+    cards.appendChild(new ExtraFilm(getRandomFilm()).render());
   }
 
   return cards;
 };
 
 export const renderTopRated = () => {
-  Container.TOP_RATED.innerHTML = createExtraCards(Quantity.TOP);
+  const newFilmsContainer = Container.TOP_RATED.cloneNode(false);
+
+  newFilmsContainer.appendChild(createExtraCards(Quantity.TOP));
+  Container.TOP_RATED.parentElement.replaceChild(newFilmsContainer, Container.TOP_RATED);
+  Container.TOP_RATED = newFilmsContainer;
 };
 
 export const renderMostCommented = () => {
-  Container.MOST_COMMENTED.innerHTML = createExtraCards(Quantity.MOST_COMMENTED);
+  const newFilmsContainer = Container.MOST_COMMENTED.cloneNode(false);
+
+  newFilmsContainer.appendChild(createExtraCards(Quantity.MOST_COMMENTED));
+  Container.MOST_COMMENTED.parentElement.replaceChild(newFilmsContainer, Container.MOST_COMMENTED);
+  Container.MOST_COMMENTED = newFilmsContainer;
 };
 
 export const changeCards = (quantity = Quantity.CARDS) => {
