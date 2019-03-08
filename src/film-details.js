@@ -1,4 +1,4 @@
-import {MINUTES_IN_HOUR, createElement, ClassName} from './util';
+import {MINUTES_IN_HOUR, createElement, ClassName, KEY_CODE} from './util';
 
 export default class FilmDetails {
   constructor({title, rating, year, duration, genre, poster, description, comments}) {
@@ -12,7 +12,9 @@ export default class FilmDetails {
     this._comments = comments;
 
     this._element = null;
+
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
+    this._onEscButtonPush = this._onEscButtonPush.bind(this);
   }
 
   get _hours() {
@@ -190,17 +192,33 @@ export default class FilmDetails {
     </section>`;
   }
 
-  _onCloseButtonClick() {
+  _close() {
     this._element.parentElement.removeChild(this._element);
     this.unrender();
   }
 
+  _onCloseButtonClick(evt) {
+    evt.preventDefault();
+
+    this._close();
+  }
+
+  _onEscButtonPush(evt) {
+    evt.preventDefault();
+
+    if (evt.keyCode === KEY_CODE.ESC) {
+      this._close();
+    }
+  }
+
   _addEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).addEventListener(`click`, this._onCloseButtonClick);
+    document.addEventListener(`keyup`, this._onEscButtonPush);
   }
 
   _removeEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).removeEventListener(`click`, this._onCloseButtonClick);
+    document.removeEventListener(`keyup`, this._onEscButtonPush);
   }
 
   render() {

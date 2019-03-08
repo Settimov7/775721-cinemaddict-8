@@ -1,4 +1,7 @@
 export const MINUTES_IN_HOUR = 60;
+export const KEY_CODE = {
+  ESC: 27,
+};
 
 export const ClassName = {
   FILMS_LIST: `films-list__container`,
