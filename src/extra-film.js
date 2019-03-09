@@ -1,7 +1,5 @@
 import {MINUTES_IN_HOUR, createElement, ClassName} from './util';
 
-import FilmDetails from './film-details';
-
 export default class ExtraFilm {
   constructor({title, rating, year, duration, genre, poster, description, comments}) {
     this._title = title;
@@ -14,6 +12,7 @@ export default class ExtraFilm {
     this._comments = comments;
 
     this._element = null;
+    this._onCommentClick = null;
     this._onCommentButtonClick = this._onCommentButtonClick.bind(this);
   }
 
@@ -44,19 +43,9 @@ export default class ExtraFilm {
   _onCommentButtonClick(evt) {
     evt.preventDefault();
 
-    const data = {
-      title: this._title,
-      rating: this._rating,
-      year: this._year,
-      duration: this._duration,
-      genre: this._genre,
-      poster: this._poster,
-      description: this._description,
-      comments: this._comments,
-    };
-
-    const filmDetails = new FilmDetails(data);
-    document.querySelector(`body`).append(filmDetails.render());
+    if (typeof this._onCommentClick === `function`) {
+      this._onCommentClick();
+    }
   }
 
   _addEventListener() {
@@ -65,6 +54,14 @@ export default class ExtraFilm {
 
   _removeEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).removeEventListener(`click`, this._onCommentButtonClick);
+  }
+
+  get element() {
+    return this._element;
+  }
+
+  set onCommentClick(func) {
+    this._onCommentClick = func;
   }
 
   render() {

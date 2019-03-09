@@ -12,7 +12,7 @@ export default class FilmDetails {
     this._comments = comments;
 
     this._element = null;
-
+    this._onClose = null;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onEscButtonPush = this._onEscButtonPush.bind(this);
   }
@@ -193,8 +193,9 @@ export default class FilmDetails {
   }
 
   _close() {
-    this._element.parentElement.removeChild(this._element);
-    this.unrender();
+    if (typeof this._onClose === `function`) {
+      this._onClose();
+    }
   }
 
   _onCloseButtonClick(evt) {
@@ -219,6 +220,14 @@ export default class FilmDetails {
   _removeEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).removeEventListener(`click`, this._onCloseButtonClick);
     document.removeEventListener(`keyup`, this._onEscButtonPush);
+  }
+
+  get element() {
+    return this._element;
+  }
+
+  set onClose(func) {
+    this._onClose = func;
   }
 
   render() {

@@ -1,7 +1,7 @@
 import navigation from './navigation';
-import {renderTopRated, renderMostCommented, renderDefaultCards} from './card';
+import {renderCards, renderTopCards, renderMostCommentedCards} from './card';
 
 navigation();
-renderDefaultCards();
-renderTopRated();
-renderMostCommented();
+renderCards();
+renderTopCards();
+renderMostCommentedCards();
