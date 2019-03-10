@@ -1,4 +1,4 @@
-import {changeCards} from './card';
+import {renderCards} from './card';
 
 const ClassName = {
   MAIN_NAVIGATION: `main-navigation`,
@@ -44,9 +44,9 @@ const onNavigationClick = (evt) => {
   const href = target.getAttribute(`href`);
 
   if (href === `#all` || href === `#stats`) {
-    changeCards();
+    renderCards();
   } else {
-    changeCards(parseInt(target.querySelector(`.${ ClassName.COUNT }`).textContent, 10));
+    renderCards(parseInt(target.querySelector(`.${ ClassName.COUNT }`).textContent, 10));
   }
 };
 

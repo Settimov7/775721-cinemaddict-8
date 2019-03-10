@@ -1,99 +1,89 @@
+import {ClassName} from './util';
 import {getRandomFilm} from './data';
 
+import Film from './film';
+import ExtraFilm from './extra-film';
+import FilmDetails from './film-details';
+
 const Quantity = {
-  CARDS: 7,
-  TOP: 2,
-  MOST_COMMENTED: 2
+  CARDS: {
+    DEFAULT: 7,
+    EXTRA: 2
+  }
 };
 
-const MINUTES_IN_HOUR = 60;
+const body = document.querySelector(`body`);
+const filmsContainers = body.querySelectorAll(`.${ ClassName.FILMS_LIST }`);
 
-const ClassName = {
-  CONTAINER: `films-list__container`
-};
-
-const filmsContainers = document.querySelectorAll(`.${ ClassName.CONTAINER }`);
 const Container = {
   DEFAULT: filmsContainers[0],
   TOP_RATED: filmsContainers[1],
   MOST_COMMENTED: filmsContainers[2]
 };
 
-const calcHours = (duration) => Math.floor(duration / MINUTES_IN_HOUR);
-const calcMinutes = (duration) => duration - calcHours(duration) * MINUTES_IN_HOUR;
-
-const createCard = ({title, rating, year, duration, genre, poster, description, comments}) => {
-  return `<article class="film-card">
-      <h3 class="film-card__title">${ title }</h3>
-      <p class="film-card__rating">${ rating }</p>
-      <p class="film-card__info">
-        <span class="film-card__year">${ year }</span>
-        <span class="film-card__duration">${ calcHours(duration) }h&nbsp;${ calcMinutes(duration) }m</span>
-        <span class="film-card__genre">${ genre }</span>
-      </p>
-      <img src="${ poster }" alt="${ title }" class="film-card__poster">
-      <p class="film-card__description">${ description }</p>
-      <button class="film-card__comments">${ comments.length } comments</button>
-
-      <form class="film-card__controls">
-        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
-      </form>
-    </article>`;
-};
-
 const createCards = (quantity) => {
-  let cards = ``;
+  const cards = document.createDocumentFragment();
 
   for (let i = 0; i < quantity; i++) {
-    cards += createCard(getRandomFilm());
+    const film = getRandomFilm();
+    const filmComponent = new Film(film);
+    const filmDetailsComponent = new FilmDetails(film);
+
+    filmComponent.onCommentClick = () => {
+      body.append(filmDetailsComponent.render());
+    };
+
+    filmDetailsComponent.onClose = () => {
+      filmDetailsComponent.element.parentElement.removeChild(filmDetailsComponent.element);
+      filmDetailsComponent.unrender();
+    };
+
+    cards.appendChild(filmComponent.render());
   }
 
   return cards;
 };
 
-export const renderCards = (quantity) => {
-  Container.DEFAULT.innerHTML = createCards(quantity);
-};
+const createExtraCards = () => {
+  let cards = document.createDocumentFragment();
 
-export const renderDefaultCards = () => {
-  Container.DEFAULT.innerHTML = createCards(Quantity.CARDS);
-};
+  for (let i = 0; i < Quantity.CARDS.EXTRA; i++) {
+    const film = getRandomFilm();
+    const extraFilmComponent = new ExtraFilm(film);
+    const filmDetailsComponent = new FilmDetails(film);
 
-const createExtraCard = ({title, rating, year, duration, genre, poster, comments}) =>
-  `<article class="film-card film-card--no-controls">
-    <h3 class="film-card__title">${ title }</h3>
-    <p class="film-card__rating">${ rating }</p>
-    <p class="film-card__info">
-      <span class="film-card__year">${ year }</span>
-      <span class="film-card__duration">${ calcHours(duration) }h&nbsp;${ calcMinutes(duration) }m</span>
-      <span class="film-card__genre">${ genre }</span>
-    </p>
+    extraFilmComponent.onCommentClick = () => {
+      body.append(filmDetailsComponent.render());
+    };
 
-    <img src="${ poster }" alt="${ title }" class="film-card__poster">
+    filmDetailsComponent.onClose = () => {
+      filmDetailsComponent.element.parentElement.removeChild(filmDetailsComponent.element);
+      filmDetailsComponent.unrender();
+    };
 
-    <button class="film-card__comments">${ comments.length } comments</button>
-  </article>`;
-
-const createExtraCards = (quantity) => {
-  let cards = ``;
-
-  for (let i = 0; i < quantity; i++) {
-    cards += createExtraCard(getRandomFilm());
+    cards.appendChild(extraFilmComponent.render());
   }
 
   return cards;
 };
 
-export const renderTopRated = () => {
-  Container.TOP_RATED.innerHTML = createExtraCards(Quantity.TOP);
+const render = (container, cards) => {
+  const newContainer = container.cloneNode(false);
+
+  newContainer.appendChild(cards);
+  container.parentElement.replaceChild(newContainer, container);
+
+  return newContainer;
 };
 
-export const renderMostCommented = () => {
-  Container.MOST_COMMENTED.innerHTML = createExtraCards(Quantity.MOST_COMMENTED);
+export const renderCards = (quantity = Quantity.CARDS.DEFAULT) => {
+  Container.DEFAULT = render(Container.DEFAULT, createCards(quantity));
 };
 
-export const changeCards = (quantity = Quantity.CARDS) => {
-  renderCards(quantity);
+export const renderTopCards = () => {
+  Container.TOP_RATED = render(Container.TOP_RATED, createExtraCards());
+};
+
+export const renderMostCommentedCards = () => {
+  Container.MOST_COMMENTED = render(Container.MOST_COMMENTED, createExtraCards());
 };
