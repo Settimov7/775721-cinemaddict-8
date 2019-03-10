@@ -1,27 +1,12 @@
-import {MINUTES_IN_HOUR, createElement, ClassName} from './util';
+import {ClassName} from './util';
+import FilmComponent from './film-component';
 
-export default class ExtraFilm {
-  constructor({title, rating, year, duration, genre, poster, description, comments}) {
-    this._title = title;
-    this._rating = rating;
-    this._year = year;
-    this._duration = duration;
-    this._genre = genre;
-    this._poster = poster;
-    this._description = description;
-    this._comments = comments;
+export default class ExtraFilm extends FilmComponent {
+  constructor(dataFilm) {
+    super(dataFilm);
 
-    this._element = null;
     this._onCommentClick = null;
     this._onCommentButtonClick = this._onCommentButtonClick.bind(this);
-  }
-
-  get _hours() {
-    return Math.floor(this._duration / MINUTES_IN_HOUR);
-  }
-
-  get _minutes() {
-    return this._duration - this._hours * MINUTES_IN_HOUR;
   }
 
   get _template() {
@@ -48,31 +33,15 @@ export default class ExtraFilm {
     }
   }
 
-  _addEventListener() {
+  _addEventListeners() {
     this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).addEventListener(`click`, this._onCommentButtonClick);
   }
 
-  _removeEventListener() {
+  _removeEventListeners() {
     this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).removeEventListener(`click`, this._onCommentButtonClick);
-  }
-
-  get element() {
-    return this._element;
   }
 
   set onCommentClick(func) {
     this._onCommentClick = func;
-  }
-
-  render() {
-    this._element = createElement(this._template);
-    this._addEventListener();
-
-    return this._element;
-  }
-
-  unrender() {
-    this._removeEventListener();
-    this._element = null;
   }
 }

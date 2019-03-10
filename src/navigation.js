@@ -1,4 +1,4 @@
-import {renderCards} from './card';
+import {Quantity} from './util';
 
 const ClassName = {
   MAIN_NAVIGATION: `main-navigation`,
@@ -37,25 +37,25 @@ const createItem = ({title, count = 0, href = `#`, isActive = false}) => `<a
     class="${ ClassName.ITEM }${ isActive ? ` ${ ClassName.ACTIVE}` : `` }"
   >${ title }${ count ? `<span class="main-navigation__item-count">${ count }</span>` : ``}</a>`;
 
-const onNavigationClick = (evt) => {
-  evt.preventDefault();
-
-  const target = evt.target.closest(`.${ ClassName.ITEM }`);
-  const href = target.getAttribute(`href`);
-
-  if (href === `#all` || href === `#stats`) {
-    renderCards();
-  } else {
-    renderCards(parseInt(target.querySelector(`.${ ClassName.COUNT }`).textContent, 10));
-  }
-};
-
-export default () => {
+export default (films) => {
   navigationItems
     .reverse()
     .forEach((item) => {
       mainNavigation.insertAdjacentHTML(`afterBegin`, createItem(item));
     });
+
+  const onNavigationClick = (evt) => {
+    evt.preventDefault();
+
+    const target = evt.target.closest(`.${ ClassName.ITEM }`);
+    const href = target.getAttribute(`href`);
+
+    if (href === `#all` || href === `#stats`) {
+      films.changeItems(Quantity.CARDS.DEFAULT);
+    } else {
+      films.changeItems(parseInt(target.querySelector(`.${ ClassName.COUNT }`).textContent, 10));
+    }
+  };
 
   mainNavigation.addEventListener(`click`, onNavigationClick);
 };
