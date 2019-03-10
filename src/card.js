@@ -12,7 +12,8 @@ const Quantity = {
   }
 };
 
-const filmsContainers = document.querySelectorAll(`.${ ClassName.FILMS_LIST }`);
+const body = document.querySelector(`body`);
+const filmsContainers = body.querySelectorAll(`.${ ClassName.FILMS_LIST }`);
 
 const Container = {
   DEFAULT: filmsContainers[0],
@@ -29,7 +30,7 @@ const createCards = (quantity) => {
     const filmDetailsComponent = new FilmDetails(film);
 
     filmComponent.onCommentClick = () => {
-      document.querySelector(`body`).append(filmDetailsComponent.render());
+      body.append(filmDetailsComponent.render());
     };
 
     filmDetailsComponent.onClose = () => {
@@ -52,7 +53,7 @@ const createExtraCards = () => {
     const filmDetailsComponent = new FilmDetails(film);
 
     extraFilmComponent.onCommentClick = () => {
-      document.querySelector(`body`).append(filmDetailsComponent.render());
+      body.append(filmDetailsComponent.render());
     };
 
     filmDetailsComponent.onClose = () => {
