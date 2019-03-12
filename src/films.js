@@ -68,7 +68,7 @@ export default class Films extends Component {
 
   render() {
     this._element = createElement(this._template);
-    this._addEventListeners();
+    this._addEventListener();
     this.renderItems();
     return this._element;
   }

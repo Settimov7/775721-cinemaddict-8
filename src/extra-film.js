@@ -33,11 +33,11 @@ export default class ExtraFilm extends FilmComponent {
     }
   }
 
-  _addEventListeners() {
+  _addEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).addEventListener(`click`, this._onCommentButtonClick);
   }
 
-  _removeEventListeners() {
+  _removeEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).removeEventListener(`click`, this._onCommentButtonClick);
   }
 

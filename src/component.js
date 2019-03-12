@@ -17,19 +17,19 @@ export default class Component {
     return this._element;
   }
 
-  _addEventListeners() {}
+  _addEventListener() {}
 
-  _removeEventListeners() {}
+  _removeEventListener() {}
 
   render() {
     this._element = createElement(this._template);
-    this._addEventListeners();
+    this._addEventListener();
 
     return this._element;
   }
 
   unrender() {
-    this._removeEventListeners();
+    this._removeEventListener();
     this._element.remove();
     this._element = null;
   }

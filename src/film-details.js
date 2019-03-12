@@ -197,12 +197,12 @@ export default class FilmDetails extends FilmComponent {
     }
   }
 
-  _addEventListeners() {
+  _addEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).addEventListener(`click`, this._onCloseButtonClick);
     document.addEventListener(`keyup`, this._onEscButtonPush);
   }
 
-  _removeEventListeners() {
+  _removeEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).removeEventListener(`click`, this._onCloseButtonClick);
     document.removeEventListener(`keyup`, this._onEscButtonPush);
   }
