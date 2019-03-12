@@ -3,8 +3,19 @@ export const KEY_CODE = {
   ESC: 27,
 };
 
+export const Quantity = {
+  CARDS: {
+    DEFAULT: 7,
+    EXTRA: 2
+  }
+};
+
 export const ClassName = {
-  FILMS_LIST: `films-list__container`,
+  FILMS: {
+    LIST: `films-list`,
+    EXTRA_LIST: `films-list--extra`,
+    CONTAINER: `films-list__container`,
+  },
   BUTTON: {
     COMMENTS: `film-card__comments`,
     CLOSE: `film-details__close-btn`,

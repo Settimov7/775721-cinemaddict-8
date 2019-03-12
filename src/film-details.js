@@ -1,28 +1,13 @@
-import {MINUTES_IN_HOUR, createElement, ClassName, KEY_CODE} from './util';
+import {ClassName, KEY_CODE} from './util';
+import FilmComponent from './film-component';
 
-export default class FilmDetails {
-  constructor({title, rating, year, duration, genre, poster, description, comments}) {
-    this._title = title;
-    this._rating = rating;
-    this._year = year;
-    this._duration = duration;
-    this._genre = genre;
-    this._poster = poster;
-    this._description = description;
-    this._comments = comments;
+export default class FilmDetails extends FilmComponent {
+  constructor(dataFilm) {
+    super(dataFilm);
 
-    this._element = null;
     this._onClose = null;
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onEscButtonPush = this._onEscButtonPush.bind(this);
-  }
-
-  get _hours() {
-    return Math.floor(this._duration / MINUTES_IN_HOUR);
-  }
-
-  get _minutes() {
-    return this._duration - this._hours * MINUTES_IN_HOUR;
   }
 
   get _template() {
@@ -222,23 +207,7 @@ export default class FilmDetails {
     document.removeEventListener(`keyup`, this._onEscButtonPush);
   }
 
-  get element() {
-    return this._element;
-  }
-
   set onClose(func) {
     this._onClose = func;
-  }
-
-  render() {
-    this._element = createElement(this._template);
-    this._addEventListener();
-
-    return this._element;
-  }
-
-  unrender() {
-    this._removeEventListener();
-    this._element = null;
   }
 }
