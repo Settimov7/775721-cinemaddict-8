@@ -36,13 +36,20 @@ export default class Films extends Component {
       const data = getRandomFilm();
 
       const film = this._isExtra ? new ExtraFilm(data) : new Film(data);
-      const filmDetails = new FilmDetails(data);
+      let filmDetails = new FilmDetails(data);
 
       film.onCommentClick = () => {
         body.append(filmDetails.render());
       };
 
-      filmDetails.onClose = () => {
+      filmDetails.onClose = ({rating, comments}) => {
+        data.rating = rating;
+        data.comments = comments;
+
+        film.update(data);
+        film.element.replaceWith(film.render());
+
+        filmDetails.update(data);
         filmDetails.element.parentElement.removeChild(filmDetails.element);
         filmDetails.unrender();
       };

@@ -1,9 +1,7 @@
 import Component from './component';
 
-import {MINUTES_IN_HOUR} from './util';
-
 export default class FilmComponent extends Component {
-  constructor({title, rating, year, duration, genre, poster, description, comments}) {
+  constructor({title, rating, year, duration, genre, poster, description, comments, date}) {
     super();
 
     if (new.target === FilmComponent) {
@@ -18,13 +16,11 @@ export default class FilmComponent extends Component {
     this._poster = poster;
     this._description = description;
     this._comments = comments;
+    this._date = date;
   }
 
-  get _hours() {
-    return Math.floor(this._duration / MINUTES_IN_HOUR);
-  }
-
-  get _minutes() {
-    return this._duration - this._hours * MINUTES_IN_HOUR;
+  update({rating, comments}) {
+    this._rating = rating;
+    this._comments = comments;
   }
 }

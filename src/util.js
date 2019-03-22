@@ -1,4 +1,3 @@
-export const MINUTES_IN_HOUR = 60;
 export const KEY_CODE = {
   ESC: 27,
 };
@@ -20,6 +19,7 @@ export const ClassName = {
     COMMENTS: `film-card__comments`,
     CLOSE: `film-details__close-btn`,
   },
+  FORM: `film-details__inner`,
 };
 
 export const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
