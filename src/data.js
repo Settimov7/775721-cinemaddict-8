@@ -69,7 +69,13 @@ const COMMENTS = [`comment`, `big comment`, `small comment`, `good comment`, ` b
 const getRandomComments = () => {
   const comments = new Array(getRandomNumber(0, Restrictions.MAX_COMMENTS))
                 .fill()
-                .map(() => COMMENTS[getRandomNumber(0, COMMENTS.length - 1)]);
+                .map(() => {
+                  return {
+                    author: `Brad Bird`,
+                    date: Date.now() + 1 - getRandomNumber(100, 10000) * 24 * 60 * 60 * 1000,
+                    text: COMMENTS[getRandomNumber(0, COMMENTS.length - 1)],
+                  };
+                });
   return comments;
 };
 
@@ -85,6 +91,7 @@ export const getRandomFilm = () => {
     title: getRandomString(TITLES),
     rating: getRandomNumber(Restrictions.RATING.MIN, Restrictions.RATING.MAX),
     year: getRandomNumber(Restrictions.YEAR.MIN, Restrictions.YEAR.MAX),
+    date: Date.now() + 1 - getRandomNumber(10000, 100000) * 24 * 60 * 60 * 1000,
     duration: getRandomNumber(Restrictions.DURATION.MIN, Restrictions.DURATION.MAX),
     genre: getRandomString(GENRES),
     description: getRandomDescription(),

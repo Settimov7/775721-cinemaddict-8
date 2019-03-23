@@ -36,7 +36,7 @@ export default class Films extends Component {
       const data = getRandomFilm();
 
       const film = this._isExtra ? new ExtraFilm(data) : new Film(data);
-      const filmDetails = new FilmDetails(data);
+      let filmDetails = new FilmDetails(data);
 
       film.onCommentClick = () => {
         body.append(filmDetails.render());
@@ -45,6 +45,26 @@ export default class Films extends Component {
       filmDetails.onClose = () => {
         filmDetails.element.parentElement.removeChild(filmDetails.element);
         filmDetails.unrender();
+      };
+
+      filmDetails.onMessageSubmit = ({comments}) => {
+        data.comments = comments;
+
+        film.update(data);
+        film.element.replaceWith(film.render());
+
+        filmDetails.update(data);
+        filmDetails.updateComments();
+      };
+
+      filmDetails.onRating = ({rating}) => {
+        data.rating = rating;
+
+        film.update(data);
+        film.element.replaceWith(film.render());
+
+        filmDetails.update(data);
+        filmDetails.updateRating();
       };
 
       fragment.appendChild(film.render());
