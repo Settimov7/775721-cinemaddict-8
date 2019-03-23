@@ -1,5 +1,6 @@
 export const KEY_CODE = {
   ESC: 27,
+  ENTER: 13,
 };
 
 export const Quantity = {
@@ -20,6 +21,14 @@ export const ClassName = {
     CLOSE: `film-details__close-btn`,
   },
   FORM: `film-details__inner`,
+  COMMENTS: `film-details__comments-list`,
+  COMMENT_TEXTAREA: `film-details__comment-input`,
+  COMMENTS_COUNTER: `film-details__comments-count`,
+  RATING: {
+    TOTAL: `film-details__total-rating`,
+    INPUT: `film-details__user-rating-input`,
+    CONTAINER: `film-details__user-rating-score`,
+  },
 };
 
 export const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));

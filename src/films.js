@@ -42,16 +42,29 @@ export default class Films extends Component {
         body.append(filmDetails.render());
       };
 
-      filmDetails.onClose = ({rating, comments}) => {
-        data.rating = rating;
+      filmDetails.onClose = () => {
+        filmDetails.element.parentElement.removeChild(filmDetails.element);
+        filmDetails.unrender();
+      };
+
+      filmDetails.onMessageSubmit = ({comments}) => {
         data.comments = comments;
 
         film.update(data);
         film.element.replaceWith(film.render());
 
         filmDetails.update(data);
-        filmDetails.element.parentElement.removeChild(filmDetails.element);
-        filmDetails.unrender();
+        filmDetails.updateComments();
+      };
+
+      filmDetails.onRating = ({rating}) => {
+        data.rating = rating;
+
+        film.update(data);
+        film.element.replaceWith(film.render());
+
+        filmDetails.update(data);
+        filmDetails.updateRating();
       };
 
       fragment.appendChild(film.render());

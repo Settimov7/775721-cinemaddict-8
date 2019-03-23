@@ -1,5 +1,6 @@
 import moment from 'moment';
-import {ClassName, KEY_CODE} from './util';
+
+import {ClassName, KEY_CODE, createElement} from './util';
 
 import FilmComponent from './film-component';
 
@@ -10,9 +11,32 @@ export default class FilmDetails extends FilmComponent {
     super(dataFilm);
 
     this._onClose = null;
+    this._onMessageSubmit = null;
+    this._onRating = null;
 
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onEscButtonPush = this._onEscButtonPush.bind(this);
+    this._onCtrlEnterPush = this._onCtrlEnterPush.bind(this);
+    this._onRatingChange = this._onRatingChange.bind(this);
+  }
+
+  get _commentsTemplate() {
+    return `
+      <ul class="film-details__comments-list">
+        ${ this._comments.map((comment) => (`
+          <li class="film-details__comment">
+            <span class="film-details__comment-emoji">😴</span>
+            <div>
+              <p class="film-details__comment-text">${ comment.text }</p>
+              <p class="film-details__comment-info">
+                <span class="film-details__comment-author">${ comment.author }</span>
+                <span class="film-details__comment-day">${ moment(comment.date).format(`DD MM YY`) }</span>
+              </p>
+            </div>
+          </li>
+        `.trim())).join(``) }
+      </ul>
+    `.trim();
   }
 
   get _template() {
@@ -95,20 +119,7 @@ export default class FilmDetails extends FilmComponent {
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${ this._comments.length }</span></h3>
 
-          <ul class="film-details__comments-list">
-            ${ this._comments.map((comment) => (`
-              <li class="film-details__comment">
-                <span class="film-details__comment-emoji">😴</span>
-                <div>
-                  <p class="film-details__comment-text">${ comment.text }</p>
-                  <p class="film-details__comment-info">
-                    <span class="film-details__comment-author">${ comment.author }</span>
-                    <span class="film-details__comment-day">${ moment(comment.date).format(`DD MM YY`) }</span>
-                  </p>
-                </div>
-              </li>
-            `.trim())).join(``) }
-          </ul>
+          ${ this._commentsTemplate }
 
           <div class="film-details__new-comment">
             <div>
@@ -188,6 +199,42 @@ export default class FilmDetails extends FilmComponent {
     return entry;
   }
 
+  _processRating(formData) {
+    const entry = {
+      rating: null,
+    };
+
+    const taskEditMapper = FilmDetails.createMapper(entry);
+
+    for (const pair of formData.entries()) {
+      const [property, value] = pair;
+
+      if (property === `score` && taskEditMapper[property]) {
+        taskEditMapper[property](value);
+      }
+    }
+
+    return entry;
+  }
+
+  _processComment(formData) {
+    const entry = {
+      comments: this._comments,
+    };
+
+    const taskEditMapper = FilmDetails.createMapper(entry);
+
+    for (const pair of formData.entries()) {
+      const [property, value] = pair;
+
+      if (property === `comment` && taskEditMapper[property]) {
+        taskEditMapper[property](value);
+      }
+    }
+
+    return entry;
+  }
+
   static createMapper(target) {
     return {
       comment: (value) => {
@@ -228,17 +275,65 @@ export default class FilmDetails extends FilmComponent {
     }
   }
 
+  _onCtrlEnterPush(evt) {
+    evt.preventDefault();
+
+    if (evt.ctrlKey && evt.keyCode === KEY_CODE.ENTER && typeof this._onMessageSubmit === `function`) {
+      const formData = new FormData(this._element.querySelector(`.${ ClassName.FORM }`));
+      const newData = this._processComment(formData);
+
+      this._onMessageSubmit(newData);
+    }
+  }
+
+  _onRatingChange(evt) {
+    const target = evt.target.closest(`.${ ClassName.RATING.INPUT }`);
+
+    if (target && typeof this._onRating === `function`) {
+      const formData = new FormData(this._element.querySelector(`.${ ClassName.FORM }`));
+      const newData = this._processRating(formData);
+
+      this._onRating(newData);
+    }
+  }
+
   _addEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).addEventListener(`click`, this._onCloseButtonClick);
     document.addEventListener(`keyup`, this._onEscButtonPush);
+    this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA}`).addEventListener(`keyup`, this._onCtrlEnterPush);
+    this._element.querySelector(`.${ ClassName.FORM }`).addEventListener(`change`, this._onRatingChange);
   }
 
   _removeEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).removeEventListener(`click`, this._onCloseButtonClick);
     document.removeEventListener(`keyup`, this._onEscButtonPush);
+    this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA }`).removeEventListener(`keyup`, this._onCtrlEnterPush);
+    this._element.querySelector(`.${ ClassName.FORM }`).removeEventListener(`change`, this._onRatingChange);
+  }
+
+  updateComments() {
+    this._removeEventListener();
+    this._element.querySelector(`.${ ClassName.COMMENTS }`).replaceWith(createElement(this._commentsTemplate));
+    this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA }`).value = ``;
+    this._element.querySelector(`.${ ClassName.COMMENTS_COUNTER }`).textContent = this._comments.length;
+    this._addEventListener();
+  }
+
+  updateRating() {
+    this._removeEventListener();
+    this._element.querySelector(`.${ ClassName.RATING.TOTAL }`).textContent = this._rating;
+    this._addEventListener();
   }
 
   set onClose(func) {
     this._onClose = func;
+  }
+
+  set onRating(func) {
+    this._onRating = func;
+  }
+
+  set onMessageSubmit(func) {
+    this._onMessageSubmit = func;
   }
 }
