@@ -1,12 +1,13 @@
 import {ClassName, Quantity} from './util';
 import {getRandomFilm} from './data';
+
 import Film from './film';
 import ExtraFilm from './extra-film';
 import FilmDetails from './film-details';
 import Filter from './filter';
 
 const filmContainers = document.querySelectorAll(`.${ ClassName.FILMS.CONTAINER }`);
-const filmDetailsParent = document.querySelector(`body`);
+const filmDetailsParent = document.querySelector(`${ ClassName.BODY }`);
 const mainNavigation = document.querySelector(`.${ ClassName.MAIN_NAVIGATION }`);
 
 const FilmContainer = {
@@ -182,7 +183,7 @@ const renderFilters = (filters) => {
   const fragment = document.createDocumentFragment();
 
   filters.forEach((filter) => {
-    filter.onClick = (typeFilter) => {
+    filter.onFilter = (typeFilter) => {
       const activeFilter = findActiveFilter(filters);
 
       activeFilter.changeStatus();

@@ -41,7 +41,8 @@ export const ClassName = {
   FILTER: {
     DEFAULT: `main-navigation__item`,
     ACTIVE: `main-navigation__item--active`
-  }
+  },
+  BODY: `body`,
 };
 
 export const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));

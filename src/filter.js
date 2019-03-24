@@ -13,9 +13,8 @@ export default class Filter extends Component {
     this._state = {
       isActive
     };
-    // this._isActive = isActive;
 
-    this._onClick = null;
+    this._onFilter = null;
 
     this._onLabelClick = this._onLabelClick.bind(this);
   }
@@ -24,8 +23,8 @@ export default class Filter extends Component {
     return this._state.isActive;
   }
 
-  set onClick(func) {
-    this._onClick = func;
+  set onFilter(func) {
+    this._onFilter = func;
   }
 
   get _template() {
@@ -42,9 +41,9 @@ export default class Filter extends Component {
 
     const target = evt.target.closest(`.${ ClassName.FILTER.DEFAULT }`);
 
-    if (target && !this._state.isActive && typeof this._onClick === `function`) {
+    if (target && !this._state.isActive && typeof this._onFilter === `function`) {
       const href = this._href;
-      this._onClick(href);
+      this._onFilter(href);
 
       this.changeStatus();
     }
