@@ -8,11 +8,18 @@ export default class Film extends FilmComponent {
     super(filmData);
 
     this._onCommentClick = null;
+    this._onAddToWatchList = null;
+    this._onMarkAsWatched = null;
+    this._onMarkAsFavorite = null;
+
     this._onCommentButtonClick = this._onCommentButtonClick.bind(this);
+    this._onAddToWatchListClick = this._onAddToWatchListClick.bind(this);
+    this._onMarkAsWatchedClick = this._onMarkAsWatchedClick.bind(this);
+    this._onMarkAsFavoriteClick = this._onMarkAsFavoriteClick.bind(this);
   }
 
-  get _template() {
-    return `<article class="film-card">
+  get _contentTemplate() {
+    return `
       <h3 class="film-card__title">${ this._title }</h3>
       <p class="film-card__rating">${ this._rating }</p>
       <p class="film-card__info">
@@ -29,7 +36,29 @@ export default class Film extends FilmComponent {
         <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
         <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
       </form>
+    `.trim();
+  }
+
+  get _template() {
+    return `<article class="film-card">
+      ${ this._contentTemplate }
     </article>`.trim();
+  }
+
+  set onCommentClick(func) {
+    this._onCommentClick = func;
+  }
+
+  set onAddToWatchList(func) {
+    this._onAddToWatchList = func;
+  }
+
+  set onMarkAsWatched(func) {
+    this._onMarkAsWatched = func;
+  }
+
+  set onMarkAsFavorite(func) {
+    this._onMarkAsFavorite = func;
   }
 
   _onCommentButtonClick(evt) {
@@ -40,15 +69,47 @@ export default class Film extends FilmComponent {
     }
   }
 
+  _onAddToWatchListClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onAddToWatchList === `function`) {
+      const newData = {inWatchList: !this._inWatchList};
+
+      this._onAddToWatchList(newData);
+    }
+  }
+
+  _onMarkAsWatchedClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onMarkAsWatched === `function`) {
+      const newData = {isWatched: !this._isWatched};
+
+      this._onMarkAsWatched(newData);
+    }
+  }
+
+  _onMarkAsFavoriteClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onMarkAsFavorite === `function`) {
+      const newData = {isFavorite: !this._isFavorite};
+
+      this._onMarkAsFavorite(newData);
+    }
+  }
+
   _addEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).addEventListener(`click`, this._onCommentButtonClick);
+    this._element.querySelector(`.${ ClassName.BUTTON.WATCHLIST }`).addEventListener(`click`, this._onAddToWatchListClick);
+    this._element.querySelector(`.${ ClassName.BUTTON.WATCHED }`).addEventListener(`click`, this._onMarkAsWatchedClick);
+    this._element.querySelector(`.${ ClassName.BUTTON.FAVORITE }`).addEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 
   _removeEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).removeEventListener(`click`, this._onCommentButtonClick);
-  }
-
-  set onCommentClick(func) {
-    this._onCommentClick = func;
+    this._element.querySelector(`.${ ClassName.BUTTON.WATCHLIST }`).removeEventListener(`click`, this._onAddToWatchListClick);
+    this._element.querySelector(`.${ ClassName.BUTTON.WATCHED }`).removeEventListener(`click`, this._onMarkAsWatchedClick);
+    this._element.querySelector(`.${ ClassName.BUTTON.FAVORITE }`).removeEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 }

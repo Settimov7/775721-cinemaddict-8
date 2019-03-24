@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import {ClassName, KEY_CODE, createElement} from './util';
+import {ClassName, KEY_CODE} from './util';
 
 import FilmComponent from './film-component';
 
@@ -13,11 +13,17 @@ export default class FilmDetails extends FilmComponent {
     this._onClose = null;
     this._onMessageSubmit = null;
     this._onRating = null;
+    this._onAddToWatchList = null;
+    this._onMarkAsWatched = null;
+    this._onMarkAsFavorite = null;
 
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onEscButtonPush = this._onEscButtonPush.bind(this);
     this._onCtrlEnterPush = this._onCtrlEnterPush.bind(this);
     this._onRatingChange = this._onRatingChange.bind(this);
+    this._onAddToWatchListClick = this._onAddToWatchListClick.bind(this);
+    this._onMarkAsWatchedClick = this._onMarkAsWatchedClick.bind(this);
+    this._onMarkAsFavoriteClick = this._onMarkAsFavoriteClick.bind(this);
   }
 
   get _commentsTemplate() {
@@ -39,9 +45,9 @@ export default class FilmDetails extends FilmComponent {
     `.trim();
   }
 
-  get _template() {
-    return `<section class="film-details">
-      <form class="film-details__inner" action="" method="get">
+  get _contentTemplate() {
+    return `
+    <form class="film-details__inner" action="" method="get">
         <div class="film-details__close">
           <button class="film-details__close-btn" type="button">close</button>
         </div>
@@ -106,14 +112,14 @@ export default class FilmDetails extends FilmComponent {
         </div>
 
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
-          <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${ this._inWatchList ? `checked` : `` }>
+          <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">${ this._inWatchList ? `Already in watchlist` : `Add to watchlist` }</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" checked>
-          <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${ this._isWatched ? `checked` : ``}>
+          <label for="watched" class="film-details__control-label film-details__control-label--watched">${ this._isWatched ? `Already in watched` : `Add to watched` }</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
-          <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${ this._isFavorite ? `checked` : ``}>
+          <label for="favorite" class="film-details__control-label film-details__control-label--favorite">${ this._isFavorite ? `Already in favorites` : `Add to favorites` }</label>
         </section>
 
         <section class="film-details__comments-wrap">
@@ -177,7 +183,37 @@ export default class FilmDetails extends FilmComponent {
           </div>
         </section>
       </form>
+    `.trim();
+  }
+
+  get _template() {
+    return `<section class="film-details">
+      ${ this._contentTemplate }
     </section>`.trim();
+  }
+
+  set onClose(func) {
+    this._onClose = func;
+  }
+
+  set onRating(func) {
+    this._onRating = func;
+  }
+
+  set onMessageSubmit(func) {
+    this._onMessageSubmit = func;
+  }
+
+  set onAddToWatchList(func) {
+    this._onAddToWatchList = func;
+  }
+
+  set onMarkAsWatched(func) {
+    this._onMarkAsWatched = func;
+  }
+
+  set onMarkAsFavorite(func) {
+    this._onMarkAsFavorite = func;
   }
 
   _processForm(formData) {
@@ -297,11 +333,45 @@ export default class FilmDetails extends FilmComponent {
     }
   }
 
+  _onAddToWatchListClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onAddToWatchList === `function`) {
+      const newData = {inWatchList: !this._inWatchList};
+
+      this._onAddToWatchList(newData);
+    }
+  }
+
+  _onMarkAsWatchedClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onMarkAsWatched === `function`) {
+      const newData = {isWatched: !this._isWatched};
+
+      this._onMarkAsWatched(newData);
+    }
+  }
+
+  _onMarkAsFavoriteClick(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onMarkAsFavorite === `function`) {
+      const newData = {isFavorite: !this._isFavorite};
+
+      this._onMarkAsFavorite(newData);
+    }
+  }
+
   _addEventListener() {
     this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).addEventListener(`click`, this._onCloseButtonClick);
     document.addEventListener(`keyup`, this._onEscButtonPush);
     this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA}`).addEventListener(`keyup`, this._onCtrlEnterPush);
     this._element.querySelector(`.${ ClassName.FORM }`).addEventListener(`change`, this._onRatingChange);
+
+    this._element.querySelector(`.${ ClassName.LABEL.WATCHLIST }`).addEventListener(`click`, this._onAddToWatchListClick);
+    this._element.querySelector(`.${ ClassName.LABEL.WATCHED }`).addEventListener(`click`, this._onMarkAsWatchedClick);
+    this._element.querySelector(`.${ ClassName.LABEL.FAVORITE }`).addEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 
   _removeEventListener() {
@@ -309,31 +379,9 @@ export default class FilmDetails extends FilmComponent {
     document.removeEventListener(`keyup`, this._onEscButtonPush);
     this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA }`).removeEventListener(`keyup`, this._onCtrlEnterPush);
     this._element.querySelector(`.${ ClassName.FORM }`).removeEventListener(`change`, this._onRatingChange);
-  }
 
-  updateComments() {
-    this._removeEventListener();
-    this._element.querySelector(`.${ ClassName.COMMENTS }`).replaceWith(createElement(this._commentsTemplate));
-    this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA }`).value = ``;
-    this._element.querySelector(`.${ ClassName.COMMENTS_COUNTER }`).textContent = this._comments.length;
-    this._addEventListener();
-  }
-
-  updateRating() {
-    this._removeEventListener();
-    this._element.querySelector(`.${ ClassName.RATING.TOTAL }`).textContent = this._rating;
-    this._addEventListener();
-  }
-
-  set onClose(func) {
-    this._onClose = func;
-  }
-
-  set onRating(func) {
-    this._onRating = func;
-  }
-
-  set onMessageSubmit(func) {
-    this._onMessageSubmit = func;
+    this._element.querySelector(`.${ ClassName.LABEL.WATCHLIST }`).removeEventListener(`click`, this._onAddToWatchListClick);
+    this._element.querySelector(`.${ ClassName.LABEL.WATCHED }`).removeEventListener(`click`, this._onMarkAsWatchedClick);
+    this._element.querySelector(`.${ ClassName.LABEL.FAVORITE }`).removeEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 }

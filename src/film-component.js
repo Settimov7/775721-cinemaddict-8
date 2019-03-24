@@ -1,7 +1,7 @@
 import Component from './component';
 
 export default class FilmComponent extends Component {
-  constructor({title, rating, year, duration, genre, poster, description, comments, date}) {
+  constructor({title, rating, year, duration, genre, poster, description, comments, date, inWatchList = false, isWatched = false, isFavorite = false}) {
     super();
 
     if (new.target === FilmComponent) {
@@ -17,10 +17,28 @@ export default class FilmComponent extends Component {
     this._description = description;
     this._comments = comments;
     this._date = date;
+    this._inWatchList = inWatchList;
+    this._isWatched = isWatched;
+    this._isFavorite = isFavorite;
   }
 
-  update({rating, comments}) {
+  get _contentTemplate() {}
+
+  updateElement() {
+    if (this._element) {
+      this._removeEventListener();
+      this._element.innerHTML = this._contentTemplate;
+      this._addEventListener();
+    }
+  }
+
+  update({rating, comments, inWatchList, isWatched, isFavorite}) {
     this._rating = rating;
     this._comments = comments;
+    this._inWatchList = inWatchList;
+    this._isWatched = isWatched;
+    this._isFavorite = isFavorite;
+
+    this.updateElement();
   }
 }

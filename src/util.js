@@ -4,7 +4,7 @@ export const KEY_CODE = {
 };
 
 export const Quantity = {
-  CARDS: {
+  MAX_CARDS: {
     DEFAULT: 7,
     EXTRA: 2
   }
@@ -19,6 +19,14 @@ export const ClassName = {
   BUTTON: {
     COMMENTS: `film-card__comments`,
     CLOSE: `film-details__close-btn`,
+    WATCHLIST: `film-card__controls-item--add-to-watchlist`,
+    WATCHED: `film-card__controls-item--mark-as-watched`,
+    FAVORITE: `film-card__controls-item--favorite`
+  },
+  LABEL: {
+    WATCHLIST: `film-details__control-label--watchlist`,
+    WATCHED: `film-details__control-label--watched`,
+    FAVORITE: `film-details__control-label--favorite`,
   },
   FORM: `film-details__inner`,
   COMMENTS: `film-details__comments-list`,
@@ -34,6 +42,8 @@ export const ClassName = {
 export const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
 
 export const getRandomString = (strings) => strings[getRandomNumber(0, strings.length - 1)];
+
+export const getRandomBoolean = () => [true, false][getRandomNumber(0, 1)];
 
 export const createElement = (template) => {
   const newElement = document.createElement(`template`);

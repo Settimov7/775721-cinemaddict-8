@@ -11,8 +11,8 @@ export default class ExtraFilm extends FilmComponent {
     this._onCommentButtonClick = this._onCommentButtonClick.bind(this);
   }
 
-  get _template() {
-    return `<article class="film-card film-card--no-controls">
+  get _contentTemplate() {
+    return `
       <h3 class="film-card__title">${ this._title }</h3>
       <p class="film-card__rating">${ this._rating }</p>
       <p class="film-card__info">
@@ -24,6 +24,12 @@ export default class ExtraFilm extends FilmComponent {
       <img src="${ this._poster }" alt="${ this._title }" class="film-card__poster">
 
       <button class="film-card__comments">${ this._comments.length } comments</button>
+    `.trim();
+  }
+
+  get _template() {
+    return `<article class="film-card film-card--no-controls">
+      ${ this._contentTemplate }
     </article>`.trim();
   }
 
