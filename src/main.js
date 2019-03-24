@@ -1,12 +1,13 @@
-import navigation from './navigation';
 import {ClassName, Quantity} from './util';
 import {getRandomFilm} from './data';
 import Film from './film';
 import ExtraFilm from './extra-film';
 import FilmDetails from './film-details';
+import Filter from './filter';
 
 const filmContainers = document.querySelectorAll(`.${ ClassName.FILMS.CONTAINER }`);
 const filmDetailsParent = document.querySelector(`body`);
+const mainNavigation = document.querySelector(`.${ ClassName.MAIN_NAVIGATION }`);
 
 const FilmContainer = {
   DEFAULT: filmContainers[0],
@@ -20,6 +21,60 @@ const sortFilmsByRating = ({rating: a}, {rating: b}) => b - a;
 const sortFilmsByComments = ({comments: a}, {comments: b}) => b.length - a.length;
 
 const allFilms = generateFilms(Quantity.MAX_CARDS.DEFAULT);
+const watchList = allFilms.filter((film) => film.inWatchList);
+const watchedFilms = allFilms.filter((film) => film.isWatched);
+const favoritesFilms = allFilms.filter((film) => film.isFavorite);
+
+const filtersData = [
+  {
+    title: `All movies`,
+    href: `#all`,
+    isActive: true
+  },
+  {
+    title: `Watchlist`,
+    href: `#watchlist`,
+    count: watchList.length
+  },
+  {
+    title: `History`,
+    href: `#history`,
+    count: watchedFilms.length
+  },
+  {
+    title: `Favorites`,
+    href: `#favorites`,
+    count: favoritesFilms.length
+  }
+];
+
+const filterFilms = (typeFilter) => {
+  switch (typeFilter) {
+    case `#all`: {
+      FilmContainer.DEFAULT.innerHTML = ``;
+      renderFilms(allFilms, FilmContainer.DEFAULT);
+      break;
+    }
+
+    case `#watchlist`: {
+      FilmContainer.DEFAULT.innerHTML = ``;
+      renderFilms(watchList, FilmContainer.DEFAULT);
+      break;
+    }
+
+    case `#history`: {
+      FilmContainer.DEFAULT.innerHTML = ``;
+      renderFilms(watchedFilms, FilmContainer.DEFAULT);
+      break;
+    }
+
+    case `#favorites`: {
+      FilmContainer.DEFAULT.innerHTML = ``;
+      renderFilms(favoritesFilms, FilmContainer.DEFAULT);
+      break;
+    }
+  }
+};
 
 const updateFilms = () => {
   FilmContainer.TOP_RATED.innerHTML = ``;
@@ -116,6 +171,31 @@ const renderFilms = (films, container, isExtra = false) => {
 
   container.appendChild(fragment);
 };
+
+const findActiveFilter = (items) => items.find((item) => {
+  return item.isActive;
+});
+
+const createFilters = (data) => data.map((item) => new Filter(item));
+
+const renderFilters = (filters) => {
+  const fragment = document.createDocumentFragment();
+
+  filters.forEach((filter) => {
+    filter.onClick = (typeFilter) => {
+      const activeFilter = findActiveFilter(filters);
+
+      activeFilter.changeStatus();
+      filterFilms(typeFilter);
+    };
+
+    fragment.appendChild(filter.render());
+  });
+
+  mainNavigation.insertBefore(fragment, mainNavigation.firstChild);
+};
+
+renderFilters(createFilters(filtersData));
 
 renderFilms(allFilms, FilmContainer.DEFAULT);
 renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);

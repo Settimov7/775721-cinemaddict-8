@@ -11,6 +11,7 @@ export const Quantity = {
 };
 
 export const ClassName = {
+  MAIN_NAVIGATION: `main-navigation`,
   FILMS: {
     LIST: `films-list`,
     EXTRA_LIST: `films-list--extra`,
@@ -37,6 +38,10 @@ export const ClassName = {
     INPUT: `film-details__user-rating-input`,
     CONTAINER: `film-details__user-rating-score`,
   },
+  FILTER: {
+    DEFAULT: `main-navigation__item`,
+    ACTIVE: `main-navigation__item--active`
+  }
 };
 
 export const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
