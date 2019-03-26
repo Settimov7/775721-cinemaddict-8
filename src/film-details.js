@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import {ClassName, KEY_CODE} from './util';
+import {ClassName, KEY_CODE, createElement} from './util';
 
 import FilmComponent from './film-component';
 
@@ -9,6 +9,13 @@ const MAX_RATING = 9;
 export default class FilmDetails extends FilmComponent {
   constructor(dataFilm) {
     super(dataFilm);
+
+    this._buttonClose = null;
+    this._commentTextArea = null;
+    this._form = null;
+    this._labelWatchlist = null;
+    this._labelWatched = null;
+    this._labelFavorite = null;
 
     this._onClose = null;
     this._onMessageSubmit = null;
@@ -363,25 +370,64 @@ export default class FilmDetails extends FilmComponent {
     }
   }
 
-  _addEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).addEventListener(`click`, this._onCloseButtonClick);
-    document.addEventListener(`keyup`, this._onEscButtonPush);
-    this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA}`).addEventListener(`keyup`, this._onCtrlEnterPush);
-    this._element.querySelector(`.${ ClassName.FORM }`).addEventListener(`change`, this._onRatingChange);
+  _getButtonClose() {
+    return this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`);
+  }
 
-    this._element.querySelector(`.${ ClassName.LABEL.WATCHLIST }`).addEventListener(`click`, this._onAddToWatchListClick);
-    this._element.querySelector(`.${ ClassName.LABEL.WATCHED }`).addEventListener(`click`, this._onMarkAsWatchedClick);
-    this._element.querySelector(`.${ ClassName.LABEL.FAVORITE }`).addEventListener(`click`, this._onMarkAsFavoriteClick);
+  _getCommentTextArea() {
+    return this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA}`);
+  }
+
+  _getForm() {
+    return this._element.querySelector(`.${ ClassName.FORM }`);
+  }
+
+  _getLabelWatchlist() {
+    return this._element.querySelector(`.${ ClassName.LABEL.WATCHLIST }`);
+  }
+
+  _getLabelWatched() {
+    return this._element.querySelector(`.${ ClassName.LABEL.WATCHED }`);
+  }
+
+  _getLabelFavorite() {
+    return this._element.querySelector(`.${ ClassName.LABEL.FAVORITE }`);
+  }
+
+  _addEventListener() {
+    this._buttonClose.addEventListener(`click`, this._onCloseButtonClick);
+    document.addEventListener(`keyup`, this._onEscButtonPush);
+    this._commentTextArea.addEventListener(`keyup`, this._onCtrlEnterPush);
+    this._form.addEventListener(`change`, this._onRatingChange);
+
+    this._labelWatchlist.addEventListener(`click`, this._onAddToWatchListClick);
+    this._labelWatched.addEventListener(`click`, this._onMarkAsWatchedClick);
+    this._labelFavorite.addEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 
   _removeEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`).removeEventListener(`click`, this._onCloseButtonClick);
+    this._buttonClose.removeEventListener(`click`, this._onCloseButtonClick);
     document.removeEventListener(`keyup`, this._onEscButtonPush);
-    this._element.querySelector(`.${ ClassName.COMMENT_TEXTAREA }`).removeEventListener(`keyup`, this._onCtrlEnterPush);
-    this._element.querySelector(`.${ ClassName.FORM }`).removeEventListener(`change`, this._onRatingChange);
+    this._commentTextArea.removeEventListener(`keyup`, this._onCtrlEnterPush);
+    this._form.removeEventListener(`change`, this._onRatingChange);
 
-    this._element.querySelector(`.${ ClassName.LABEL.WATCHLIST }`).removeEventListener(`click`, this._onAddToWatchListClick);
-    this._element.querySelector(`.${ ClassName.LABEL.WATCHED }`).removeEventListener(`click`, this._onMarkAsWatchedClick);
-    this._element.querySelector(`.${ ClassName.LABEL.FAVORITE }`).removeEventListener(`click`, this._onMarkAsFavoriteClick);
+    this._labelWatchlist.removeEventListener(`click`, this._onAddToWatchListClick);
+    this._labelWatched.removeEventListener(`click`, this._onMarkAsWatchedClick);
+    this._labelFavorite.removeEventListener(`click`, this._onMarkAsFavoriteClick);
+  }
+
+  render() {
+    this._element = createElement(this._template);
+
+    this._buttonClose = this._getButtonClose();
+    this._commentTextArea = this._getCommentTextArea();
+    this._form = this._getForm();
+    this._labelWatchlist = this._getLabelWatchlist();
+    this._labelWatched = this._getLabelWatched();
+    this._labelFavorite = this._getLabelFavorite();
+
+    this._addEventListener();
+
+    return this._element;
   }
 }

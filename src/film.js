@@ -1,11 +1,16 @@
 import moment from 'moment';
-import {ClassName} from './util';
+import {ClassName, createElement} from './util';
 
 import FilmComponent from './film-component';
 
 export default class Film extends FilmComponent {
   constructor(filmData) {
     super(filmData);
+
+    this._buttonComments = null;
+    this._buttonWatchList = null;
+    this._buttonWatched = null;
+    this._buttonFavorite = null;
 
     this._onCommentClick = null;
     this._onAddToWatchList = null;
@@ -99,17 +104,46 @@ export default class Film extends FilmComponent {
     }
   }
 
+  _getbuttonComments() {
+    return this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`);
+  }
+
+  _getbuttonWatchList() {
+    return this._element.querySelector(`.${ ClassName.BUTTON.WATCHLIST }`);
+  }
+
+  _getbuttonWatched() {
+    return this._element.querySelector(`.${ ClassName.BUTTON.WATCHED }`);
+  }
+
+  _getbuttonFavorite() {
+    return this._element.querySelector(`.${ ClassName.BUTTON.FAVORITE }`);
+  }
+
   _addEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).addEventListener(`click`, this._onCommentButtonClick);
-    this._element.querySelector(`.${ ClassName.BUTTON.WATCHLIST }`).addEventListener(`click`, this._onAddToWatchListClick);
-    this._element.querySelector(`.${ ClassName.BUTTON.WATCHED }`).addEventListener(`click`, this._onMarkAsWatchedClick);
-    this._element.querySelector(`.${ ClassName.BUTTON.FAVORITE }`).addEventListener(`click`, this._onMarkAsFavoriteClick);
+    this._buttonComments.addEventListener(`click`, this._onCommentButtonClick);
+    this._buttonWatchList.addEventListener(`click`, this._onAddToWatchListClick);
+    this._buttonWatched.addEventListener(`click`, this._onMarkAsWatchedClick);
+    this._buttonFavorite.addEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 
   _removeEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).removeEventListener(`click`, this._onCommentButtonClick);
-    this._element.querySelector(`.${ ClassName.BUTTON.WATCHLIST }`).removeEventListener(`click`, this._onAddToWatchListClick);
-    this._element.querySelector(`.${ ClassName.BUTTON.WATCHED }`).removeEventListener(`click`, this._onMarkAsWatchedClick);
-    this._element.querySelector(`.${ ClassName.BUTTON.FAVORITE }`).removeEventListener(`click`, this._onMarkAsFavoriteClick);
+    this._buttonComments.removeEventListener(`click`, this._onCommentButtonClick);
+    this._buttonWatchList.removeEventListener(`click`, this._onAddToWatchListClick);
+    this._buttonWatched.removeEventListener(`click`, this._onMarkAsWatchedClick);
+    this._buttonFavorite.removeEventListener(`click`, this._onMarkAsFavoriteClick);
+  }
+
+  render() {
+    this._element = createElement(this._template);
+
+    this._buttonComments = this._getbuttonComments();
+    this._buttonWatchList = this._getbuttonWatchList();
+    this._buttonWatched = this._getbuttonWatched();
+    this._buttonFavorite = this._getbuttonFavorite();
+
+    this._addEventListener();
+
+    return this._element;
   }
 }

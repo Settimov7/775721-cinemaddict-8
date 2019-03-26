@@ -1,11 +1,13 @@
 import moment from 'moment';
-import {ClassName} from './util';
+import {ClassName, createElement} from './util';
 
 import FilmComponent from './film-component';
 
 export default class ExtraFilm extends FilmComponent {
   constructor(dataFilm) {
     super(dataFilm);
+
+    this._buttonComments = null;
 
     this._onCommentClick = null;
     this._onCommentButtonClick = this._onCommentButtonClick.bind(this);
@@ -41,15 +43,29 @@ export default class ExtraFilm extends FilmComponent {
     }
   }
 
+  _getbuttonComments() {
+    return this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`)
+  }
+
   _addEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).addEventListener(`click`, this._onCommentButtonClick);
+    this._buttonComments.addEventListener(`click`, this._onCommentButtonClick);
   }
 
   _removeEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).removeEventListener(`click`, this._onCommentButtonClick);
+    this._buttonComments.removeEventListener(`click`, this._onCommentButtonClick);
   }
 
   set onCommentClick(func) {
     this._onCommentClick = func;
+  }
+
+  render() {
+    this._element = createElement(this._template);
+
+    this._buttonComments = this._getbuttonComments();
+
+    this._addEventListener();
+
+    return this._element;
   }
 }
