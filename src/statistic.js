@@ -24,7 +24,11 @@ export default class Stastic extends Component {
   }
 
   get _genresData() {
-    return this._genres.map((genre) => this._films.reduce(((counter, film) => film.genre === genre ? counter + 1 : counter), 0));
+    return this._genres.map((genre) => {
+      return this._films.reduce(((counter, film) => {
+        return (film.genre === genre) ? (counter + 1) : counter;
+      }), 0);
+    });
   }
 
   get _totalFilmsDuration() {
