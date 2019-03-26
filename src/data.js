@@ -1,4 +1,4 @@
-import {getRandomNumber, getRandomString} from './util';
+import {getRandomNumber, getRandomString, getRandomBoolean} from './util';
 
 const Restrictions = {
   RATING: {
@@ -97,5 +97,8 @@ export const getRandomFilm = () => {
     description: getRandomDescription(),
     poster: getRandomString(POSTERS),
     comments: getRandomComments(),
+    inWatchList: getRandomBoolean(),
+    isWatched: getRandomBoolean(),
+    isFavorite: getRandomBoolean(),
   };
 };

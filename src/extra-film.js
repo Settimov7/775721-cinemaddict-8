@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {ClassName} from './util';
+import {ClassName, createElement} from './util';
 
 import FilmComponent from './film-component';
 
@@ -7,12 +7,14 @@ export default class ExtraFilm extends FilmComponent {
   constructor(dataFilm) {
     super(dataFilm);
 
+    this._buttonComments = null;
+
     this._onCommentClick = null;
     this._onCommentButtonClick = this._onCommentButtonClick.bind(this);
   }
 
-  get _template() {
-    return `<article class="film-card film-card--no-controls">
+  get _contentTemplate() {
+    return `
       <h3 class="film-card__title">${ this._title }</h3>
       <p class="film-card__rating">${ this._rating }</p>
       <p class="film-card__info">
@@ -24,6 +26,12 @@ export default class ExtraFilm extends FilmComponent {
       <img src="${ this._poster }" alt="${ this._title }" class="film-card__poster">
 
       <button class="film-card__comments">${ this._comments.length } comments</button>
+    `.trim();
+  }
+
+  get _template() {
+    return `<article class="film-card film-card--no-controls">
+      ${ this._contentTemplate }
     </article>`.trim();
   }
 
@@ -35,15 +43,29 @@ export default class ExtraFilm extends FilmComponent {
     }
   }
 
+  _getbuttonComments() {
+    return this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`);
+  }
+
   _addEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).addEventListener(`click`, this._onCommentButtonClick);
+    this._buttonComments.addEventListener(`click`, this._onCommentButtonClick);
   }
 
   _removeEventListener() {
-    this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`).removeEventListener(`click`, this._onCommentButtonClick);
+    this._buttonComments.removeEventListener(`click`, this._onCommentButtonClick);
   }
 
   set onCommentClick(func) {
     this._onCommentClick = func;
+  }
+
+  render() {
+    this._element = createElement(this._template);
+
+    this._buttonComments = this._getbuttonComments();
+
+    this._addEventListener();
+
+    return this._element;
   }
 }

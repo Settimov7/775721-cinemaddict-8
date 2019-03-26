@@ -21,6 +21,8 @@ export default class Component {
 
   _removeEventListener() {}
 
+  update() {}
+
   render() {
     this._element = createElement(this._template);
     this._addEventListener();
