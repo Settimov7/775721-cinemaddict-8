@@ -44,7 +44,7 @@ export default class ExtraFilm extends FilmComponent {
   }
 
   _getbuttonComments() {
-    return this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`)
+    return this._element.querySelector(`.${ ClassName.BUTTON.COMMENTS }`);
   }
 
   _addEventListener() {
