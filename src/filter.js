@@ -3,12 +3,13 @@ import Component from './component';
 import {ClassName} from './util';
 
 export default class Filter extends Component {
-  constructor({title, href = `#`, count, isActive = false}) {
+  constructor({title, href = `#`, count = null, isAdditional = false, isActive = false}) {
     super();
 
     this._title = title;
     this._count = count;
     this._href = href;
+    this._isAdditional = isAdditional;
 
     this._state = {
       isActive
@@ -23,6 +24,10 @@ export default class Filter extends Component {
     return this._state.isActive;
   }
 
+  get getHref() {
+    return this._href;
+  }
+
   set onFilter(func) {
     this._onFilter = func;
   }
@@ -31,8 +36,8 @@ export default class Filter extends Component {
     return `
       <a
       href="${ this._href }"
-      class="main-navigation__item ${ this._state.isActive ? ` ${ ClassName.FILTER.ACTIVE}` : `` }"
-    >${ this._title }${ this._title !== `All movies` ? `<span class="main-navigation__item-count">${ this._count }</span>` : ``}</a>
+      class="main-navigation__item ${ this._state.isActive ? ` ${ ClassName.FILTER.ACTIVE}` : `` } ${this._isAdditional ? ` ${ ClassName.FILTER.ADDITIONAL }` : ``}"
+    >${ this._title }${ this._title !== `All movies` && this._title !== `Stats` ? `<span class="${ ClassName.FILTER.COUNTER }">${ this._count }</span>` : ``}</a>
     `.trim();
   }
 
@@ -53,6 +58,12 @@ export default class Filter extends Component {
     this._state.isActive = !this._state.isActive;
 
     this._element.classList.toggle(`${ ClassName.FILTER.ACTIVE}`);
+  }
+
+  update(count) {
+    this._count = count;
+
+    this._element.querySelector(`.${ ClassName.FILTER.COUNTER }`).textContent = this._count;
   }
 
   _addEventListener() {

@@ -11,8 +11,10 @@ export const Quantity = {
 };
 
 export const ClassName = {
+  MAIN: `main`,
   MAIN_NAVIGATION: `main-navigation`,
   FILMS: {
+    DEFAULT: `films`,
     LIST: `films-list`,
     EXTRA_LIST: `films-list--extra`,
     CONTAINER: `films-list__container`,
@@ -40,9 +42,18 @@ export const ClassName = {
   },
   FILTER: {
     DEFAULT: `main-navigation__item`,
-    ACTIVE: `main-navigation__item--active`
+    ACTIVE: `main-navigation__item--active`,
+    ADDITIONAL: `main-navigation__item--additional`,
+    COUNTER: `main-navigation__item-count`,
   },
   BODY: `body`,
+  VISUALLY_HIDDEN: `visually-hidden`,
+  STATISTIC: {
+    DEFAULT: `statistic`,
+    CHART: `statistic__chart`,
+    BUTTON: `main-navigation__item--additional`,
+    TEXT: `statistic__item-text`,
+  },
 };
 
 export const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));

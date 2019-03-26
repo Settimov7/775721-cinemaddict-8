@@ -1,13 +1,18 @@
 import {ClassName, Quantity} from './util';
 import {getRandomFilm} from './data';
+import Stastic from './statistic';
 
 import Film from './film';
 import ExtraFilm from './extra-film';
 import FilmDetails from './film-details';
 import Filter from './filter';
 
+const main = document.querySelector(`.${ ClassName.MAIN }`);
+
+const filmsElement = document.querySelector(`.${ ClassName.FILMS.DEFAULT }`);
 const filmContainers = document.querySelectorAll(`.${ ClassName.FILMS.CONTAINER }`);
 const filmDetailsParent = document.querySelector(`${ ClassName.BODY }`);
+
 const mainNavigation = document.querySelector(`.${ ClassName.MAIN_NAVIGATION }`);
 
 const FilmContainer = {
@@ -22,56 +27,115 @@ const sortFilmsByRating = ({rating: a}, {rating: b}) => b - a;
 const sortFilmsByComments = ({comments: a}, {comments: b}) => b.length - a.length;
 
 const allFilms = generateFilms(Quantity.MAX_CARDS.DEFAULT);
-const watchList = allFilms.filter((film) => film.inWatchList);
-const watchedFilms = allFilms.filter((film) => film.isWatched);
-const favoritesFilms = allFilms.filter((film) => film.isFavorite);
+let watchList = allFilms.filter((film) => film.inWatchList);
+let watchedFilms = allFilms.filter((film) => film.isWatched);
+let favoritesFilms = allFilms.filter((film) => film.isFavorite);
+
+const statistic = new Stastic(watchedFilms);
 
 const filtersData = [
   {
     title: `All movies`,
     href: `#all`,
+    isAdditional: false,
     isActive: true
   },
   {
     title: `Watchlist`,
     href: `#watchlist`,
-    count: watchList.length
+    count: watchList.length,
+    isAdditional: false,
   },
   {
     title: `History`,
     href: `#history`,
-    count: watchedFilms.length
+    count: watchedFilms.length,
+    isAdditional: false,
   },
   {
     title: `Favorites`,
     href: `#favorites`,
-    count: favoritesFilms.length
-  }
+    count: favoritesFilms.length,
+    isAdditional: false,
+  },
+  {
+    title: `Stats`,
+    href: `#stats`,
+    isAdditional: true,
+  },
 ];
+
+const showFilms = () => {
+  if (statistic.element) {
+    filmsElement.classList.remove(`${ ClassName.VISUALLY_HIDDEN }`);
+    statistic.unrender();
+  }
+};
+
+const renderFilters = (filters) => {
+  const fragment = document.createDocumentFragment();
+
+  filters.forEach((filter) => {
+    filter.onFilter = (typeFilter) => {
+      const activeFilter = findActiveFilter(filters);
+
+      activeFilter.changeStatus();
+      filterFilms(typeFilter);
+    };
+
+    fragment.appendChild(filter.render());
+  });
+
+  mainNavigation.appendChild(fragment);
+};
+
+const showStatistic = () => {
+  if (!statistic.element) {
+    filmsElement.classList.add(`${ ClassName.VISUALLY_HIDDEN }`);
+
+    main.appendChild(statistic.render());
+  } else {
+    statistic.updateElement(watchedFilms);
+  }
+};
 
 const filterFilms = (typeFilter) => {
   switch (typeFilter) {
     case `#all`: {
       FilmContainer.DEFAULT.innerHTML = ``;
+      showFilms();
       renderFilms(allFilms, FilmContainer.DEFAULT);
+      currentFilter = typeFilter;
       break;
     }
 
     case `#watchlist`: {
       FilmContainer.DEFAULT.innerHTML = ``;
+      showFilms();
       renderFilms(watchList, FilmContainer.DEFAULT);
+      currentFilter = typeFilter;
       break;
     }
 
     case `#history`: {
       FilmContainer.DEFAULT.innerHTML = ``;
+      showFilms();
       renderFilms(watchedFilms, FilmContainer.DEFAULT);
+      currentFilter = typeFilter;
       break;
     }
 
     case `#favorites`: {
       FilmContainer.DEFAULT.innerHTML = ``;
+      showFilms();
       renderFilms(favoritesFilms, FilmContainer.DEFAULT);
+      currentFilter = typeFilter;
+      break;
+    }
+
+    case `#stats`: {
+      showStatistic();
+      currentFilter = typeFilter;
       break;
     }
   }
@@ -83,6 +147,14 @@ const updateFilms = () => {
 
   renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
   renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
+
+  watchList = allFilms.filter((film) => film.inWatchList);
+  watchedFilms = allFilms.filter((film) => film.isWatched);
+  favoritesFilms = allFilms.filter((film) => film.isFavorite);
+
+  statistic.update(watchedFilms);
+
+  filterFilms(currentFilter);
 };
 
 const renderFilms = (films, container, isExtra = false) => {
@@ -105,6 +177,9 @@ const renderFilms = (films, container, isExtra = false) => {
       film.update(filmData);
 
       filmDetails.update(filmData);
+      updateFilms();
+
+      filters.find((filter) => filter.getHref === `#watchlist`).update(watchList.length);
     };
 
     film.onMarkAsWatched = ({isWatched}) => {
@@ -112,6 +187,9 @@ const renderFilms = (films, container, isExtra = false) => {
       film.update(filmData);
 
       filmDetails.update(filmData);
+      updateFilms();
+
+      filters.find((filter) => filter.getHref === `#history`).update(watchedFilms.length);
     };
 
     film.onMarkAsFavorite = ({isFavorite}) => {
@@ -119,6 +197,9 @@ const renderFilms = (films, container, isExtra = false) => {
       film.update(filmData);
 
       filmDetails.update(filmData);
+      updateFilms();
+
+      filters.find((filter) => filter.getHref === `#favorites`).update(favoritesFilms.length);
     };
 
     filmDetails.onClose = () => {
@@ -151,6 +232,9 @@ const renderFilms = (films, container, isExtra = false) => {
       film.update(filmData);
 
       filmDetails.update(filmData);
+      updateFilms();
+
+      filters.find((filter) => filter.getHref === `#watchlist`).update(watchList.length);
     };
 
     filmDetails.onMarkAsWatched = ({isWatched}) => {
@@ -158,6 +242,9 @@ const renderFilms = (films, container, isExtra = false) => {
       film.update(filmData);
 
       filmDetails.update(filmData);
+      updateFilms();
+
+      filters.find((filter) => filter.getHref === `#history`).update(watchedFilms.length);
     };
 
     filmDetails.onMarkAsFavorite = ({isFavorite}) => {
@@ -165,6 +252,9 @@ const renderFilms = (films, container, isExtra = false) => {
       film.update(filmData);
 
       filmDetails.update(filmData);
+      updateFilms();
+
+      filters.find((filter) => filter.getHref === `#favorites`).update(favoritesFilms.length);
     };
 
     fragment.appendChild(film.render());
@@ -178,26 +268,13 @@ const findActiveFilter = (items) => items.find((item) => {
 });
 
 const createFilters = (data) => data.map((item) => new Filter(item));
+const filters = createFilters(filtersData);
+let currentFilter = null;
 
-const renderFilters = (filters) => {
-  const fragment = document.createDocumentFragment();
-
-  filters.forEach((filter) => {
-    filter.onFilter = (typeFilter) => {
-      const activeFilter = findActiveFilter(filters);
-
-      activeFilter.changeStatus();
-      filterFilms(typeFilter);
-    };
-
-    fragment.appendChild(filter.render());
-  });
-
-  mainNavigation.insertBefore(fragment, mainNavigation.firstChild);
-};
-
-renderFilters(createFilters(filtersData));
+renderFilters(filters);
 
 renderFilms(allFilms, FilmContainer.DEFAULT);
 renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
 renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
+
+
