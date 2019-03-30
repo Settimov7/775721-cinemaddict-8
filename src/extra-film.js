@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {ClassName, createElement} from './util';
+import {ClassName} from './util';
 
 import FilmComponent from './film-component';
 

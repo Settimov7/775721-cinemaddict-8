@@ -24,7 +24,7 @@ export default class Film extends FilmComponent {
   }
 
   shake() {
-    this._element.style.animation = `${ClassName.SHAKE} ${ANIMATION_TIMEOUT / 1000}s`
+    this._element.style.animation = `${ClassName.SHAKE} ${ANIMATION_TIMEOUT / 1000}s`;
 
     setTimeout(() => {
       this._element.style.animation = ``;

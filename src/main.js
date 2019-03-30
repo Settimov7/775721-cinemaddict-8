@@ -229,7 +229,7 @@ const renderFilms = (films, container, isExtra = false) => {
         })
         .catch(() => {
           filmDetails.enableRating();
-          filmDetails.addErrorStylesToRating()
+          filmDetails.addErrorStylesToRating();
           filmDetails.shakeMessageRating();
         });
     };
@@ -286,13 +286,13 @@ const addLoadingMessage = () => {
   FilmContainer.DEFAULT.innerHTML = `Loading movies...`;
 };
 
-const addErrorMessage = (error) => {
+const addErrorMessage = () => {
   FilmContainer.DEFAULT.innerHTML = `Something went wrong while loading movies. Check your connection or try again later`;
-}
+};
 
 const removeMessage = () => {
   FilmContainer.DEFAULT.innerHTML = ``;
-}
+};
 
 const startApplication = (films) => {
   allFilms = films;
