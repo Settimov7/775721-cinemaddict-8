@@ -1,10 +1,13 @@
 /* eslint-disable */
 
 export default class ModelFilm {
-  constructor({id, comments,
-    film_info: {actors, age_rating, alternative_title, description, director, genre, poster, release, runtime, title,
-      total_rating, writers},
-    user_details: {already_watched, favorite, personal_rating, watchlist}}) {
+  constructor({id, comments, film_info, user_details}) {
+
+    const {actors, age_rating, alternative_title, description, director, genre, poster, release, runtime, title,
+      total_rating, writers} = film_info;
+
+    const {already_watched, favorite, personal_rating, watchlist} = user_details;
+
     this.id = id;
     this.comments = comments.map(({author, emotion, comment, date}) => ({
       author,

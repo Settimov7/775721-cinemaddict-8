@@ -38,6 +38,9 @@ export default class FilmDetails extends FilmComponent {
     this._onMarkAsWatched = null;
     this._onMarkAsFavorite = null;
 
+    this._ratingLabelsArray = null;
+    this._ratingInputsArray = null;
+
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onEscButtonPush = this._onEscButtonPush.bind(this);
     this._onCtrlEnterPush = this._onCtrlEnterPush.bind(this);
@@ -453,6 +456,8 @@ export default class FilmDetails extends FilmComponent {
     this._labelWatched = this._getLabelWatched();
     this._labelFavorite = this._getLabelFavorite();
     this._ratingLabels = this._getRatingLabels();
+    this._ratingLabelsArray = [...this._ratingLabels];
+    this._ratingInputsArray = [...this._ratingInputs];
   }
 
   shakeMessageForm() {
@@ -480,38 +485,38 @@ export default class FilmDetails extends FilmComponent {
   }
 
   disableRating() {
-    [...this._ratingInputs].forEach((input) => {
+    this._ratingInputsArray.forEach((input) => {
       input.disabled = true;
     });
   }
 
   enableRating() {
-    [...this._ratingInputs].forEach((input) => {
+    this._ratingInputsArray.forEach((input) => {
       input.disabled = false;
     });
   }
 
   addErrorStylesToRating() {
-    [...this._ratingInputs].forEach((input, index) => {
+    this._ratingInputsArray.forEach((input, index) => {
       if (input.checked) {
-        [...this._ratingLabels][index].style.backgroundColor = Color.ERROR;
+        this._ratingLabelsArray[index].style.backgroundColor = Color.ERROR;
       }
     });
   }
 
   removeErrorStylesFromRating() {
-    [...this._ratingLabels].forEach((label) => {
+    this._ratingLabelsArray.forEach((label) => {
       label.style.backgroundColor = Color.DEFAULT_RATING;
     });
   }
 
   shakeMessageRating() {
-    [...this._ratingInputs].forEach((input, index) => {
+    this._ratingInputsArray.forEach((input, index) => {
       if (input.checked) {
-        [...this._ratingLabels][index].style.animation = `${ClassName.SHAKE} ${ANIMATION_TIMEOUT / 1000}s`;
+        this._ratingLabelsArray[index].style.animation = `${ClassName.SHAKE} ${ANIMATION_TIMEOUT / 1000}s`;
 
         setTimeout(() => {
-          [...this._ratingLabels][index].style.animation = ``;
+          this._ratingLabelsArray[index].style.animation = ``;
         }, ANIMATION_TIMEOUT);
       }
     });
