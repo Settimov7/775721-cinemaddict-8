@@ -1,40 +1,31 @@
-/* eslint-disable */
-
 export default class ModelFilm {
-  constructor({id, comments, film_info, user_details}) {
-
-    const {actors, age_rating, alternative_title, description, director, genre, poster, release, runtime, title,
-      total_rating, writers} = film_info;
-
-    const {already_watched, favorite, personal_rating, watchlist} = user_details;
-
-    this.id = id;
-    this.comments = comments.map(({author, emotion, comment, date}) => ({
+  constructor(data) {
+    this.id = data[`id`];
+    this.comments = data[`comments`].map(({author, emotion, comment, date}) => ({
       author,
       emotion,
       comment,
       date: new Date(date)
     }));
-    this.actors = [...new Set(actors)];
-    this.ageRating = age_rating;
-    this.alternativeTitle = alternative_title;
-    this.description = description;
-    this.director = director;
-    this.genres = [...new Set(genre)];
-    this.poster = poster;
-    this.releaseDate = new Date(release.date);
-    this.releaseCountry = release[`release_country`];
-    this.duration = runtime;
-    this.title = title;
-    this.totalRating = total_rating;
-    this.writers = [...new Set(writers)];
-    this.isWatched = already_watched;
-    this.isFavorite = favorite;
-    this.rating = parseInt(personal_rating);
-    this.inWatchList = watchlist;
+    this.actors = [...new Set(data[`film_info`][`actors`])];
+    this.ageRating = data[`film_info`][`age_rating`];
+    this.alternativeTitle = data[`film_info`][`alternative_title`];
+    this.description = data[`film_info`][`description`];
+    this.director = data[`film_info`][`director`];
+    this.genres = [...new Set(data[`film_info`][`genre`])];
+    this.poster = data[`film_info`][`poster`];
+    this.releaseDate = new Date(data[`film_info`][`release`][`date`]);
+    this.releaseCountry = data[`film_info`][`release`][`release_country`];
+    this.duration = data[`film_info`][`runtime`];
+    this.title = data[`film_info`][`title`];
+    this.totalRating = data[`film_info`][`total_rating`];
+    this.writers = [...new Set(data[`film_info`][`writers`])];
+    this.isWatched = data[`user_details`][`already_watched`];
+    this.isFavorite = data[`user_details`][`favorite`];
+    this.rating = parseInt(data[`user_details`][`personal_rating`], 10);
+    this.inWatchList = data[`user_details`][`watchlist`];
   }
 
-  /* eslint-enable */
   static parseItem(data) {
     return new ModelFilm(data);
   }
