@@ -23,8 +23,11 @@ export default class Component {
 
   update() {}
 
+  _updateElementsVariables() {}
+
   render() {
     this._element = createElement(this._template);
+    this._updateElementsVariables();
     this._addEventListener();
 
     return this._element;

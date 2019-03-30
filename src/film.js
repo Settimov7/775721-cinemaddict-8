@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {ClassName, createElement} from './util';
+import {ClassName, ANIMATION_TIMEOUT} from './util';
 
 import FilmComponent from './film-component';
 
@@ -23,14 +23,22 @@ export default class Film extends FilmComponent {
     this._onMarkAsFavoriteClick = this._onMarkAsFavoriteClick.bind(this);
   }
 
+  shake() {
+    this._element.style.animation = `${ClassName.SHAKE} ${ANIMATION_TIMEOUT / 1000}s`
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
   get _contentTemplate() {
     return `
       <h3 class="film-card__title">${ this._title }</h3>
-      <p class="film-card__rating">${ this._rating }</p>
+      <p class="film-card__rating">${ this._totalRating }</p>
       <p class="film-card__info">
-        <span class="film-card__year">${ moment(this._date).format(`YYYY`) }</span>
+        <span class="film-card__year">${ moment(this._releaseDate).format(`YYYY`) }</span>
         <span class="film-card__duration">${ moment.duration(this._duration, `minutes`).hours() }h&nbsp;${ moment.duration(this._duration, `minutes`).minutes() }m</span>
-        <span class="film-card__genre">${ this._genre }</span>
+        <span class="film-card__genre">${ [...this._genres][0] }</span>
       </p>
       <img src="${ this._poster }" alt="${ this._title }" class="film-card__poster">
       <p class="film-card__description">${ this._description }</p>
@@ -134,16 +142,10 @@ export default class Film extends FilmComponent {
     this._buttonFavorite.removeEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 
-  render() {
-    this._element = createElement(this._template);
-
+  _updateElementsVariables() {
     this._buttonComments = this._getbuttonComments();
     this._buttonWatchList = this._getbuttonWatchList();
     this._buttonWatched = this._getbuttonWatched();
     this._buttonFavorite = this._getbuttonFavorite();
-
-    this._addEventListener();
-
-    return this._element;
   }
 }
