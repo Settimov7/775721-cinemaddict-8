@@ -5,7 +5,7 @@ export const KEY_CODE = {
 
 export const Quantity = {
   MAX_CARDS: {
-    DEFAULT: 7,
+    DEFAULT: 5,
     EXTRA: 2
   }
 };
@@ -38,6 +38,7 @@ export const ClassName = {
   RATING: {
     TOTAL: `film-details__total-rating`,
     INPUT: `film-details__user-rating-input`,
+    LABEL: `film-details__user-rating-label`,
     CONTAINER: `film-details__user-rating-score`,
   },
   FILTER: {
@@ -54,7 +55,10 @@ export const ClassName = {
     BUTTON: `main-navigation__item--additional`,
     TEXT: `statistic__item-text`,
   },
+  SHAKE: `shake`,
 };
+
+export const ANIMATION_TIMEOUT = 600;
 
 export const getRandomNumber = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
 

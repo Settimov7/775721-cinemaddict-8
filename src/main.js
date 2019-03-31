@@ -1,11 +1,20 @@
 import {ClassName, Quantity} from './util';
-import {getRandomFilm} from './data';
-import Stastic from './statistic';
+import Api from './api';
 
+import Stastic from './statistic';
 import Film from './film';
 import ExtraFilm from './extra-film';
 import FilmDetails from './film-details';
 import Filter from './filter';
+
+const FILMS_PATH = `https://es8-demo-srv.appspot.com/moowle/`;
+const FILMS_URL = `movies`;
+const AUTHORIZATION = `Basic eo0dasdada889a`;
+
+const filmsApi = new Api({
+  path: FILMS_PATH,
+  authorization: AUTHORIZATION
+});
 
 const main = document.querySelector(`.${ ClassName.MAIN }`);
 
@@ -21,49 +30,9 @@ const FilmContainer = {
   MOST_COMMENTED: filmContainers[2]
 };
 
-const generateFilms = (quantity) => new Array(quantity).fill().map(() => getRandomFilm());
+const sortFilmsByRating = ({totalRating: a}, {totalRating: b}) => b - a;
 
-const sortFilmsByRating = ({rating: a}, {rating: b}) => b - a;
 const sortFilmsByComments = ({comments: a}, {comments: b}) => b.length - a.length;
-
-const allFilms = generateFilms(Quantity.MAX_CARDS.DEFAULT);
-let watchList = allFilms.filter((film) => film.inWatchList);
-let watchedFilms = allFilms.filter((film) => film.isWatched);
-let favoritesFilms = allFilms.filter((film) => film.isFavorite);
-
-const statistic = new Stastic(watchedFilms);
-
-const filtersData = [
-  {
-    title: `All movies`,
-    href: `#all`,
-    isAdditional: false,
-    isActive: true
-  },
-  {
-    title: `Watchlist`,
-    href: `#watchlist`,
-    count: watchList.length,
-    isAdditional: false,
-  },
-  {
-    title: `History`,
-    href: `#history`,
-    count: watchedFilms.length,
-    isAdditional: false,
-  },
-  {
-    title: `Favorites`,
-    href: `#favorites`,
-    count: favoritesFilms.length,
-    isAdditional: false,
-  },
-  {
-    title: `Stats`,
-    href: `#stats`,
-    isAdditional: true,
-  },
-];
 
 const showFilms = () => {
   if (statistic.element) {
@@ -174,32 +143,44 @@ const renderFilms = (films, container, isExtra = false) => {
 
     film.onAddToWatchList = ({inWatchList}) => {
       filmData.inWatchList = inWatchList;
-      film.update(filmData);
+      filmsApi.update(FILMS_URL, film.id, filmData)
+        .then(() => {
+          film.update(filmData);
 
-      filmDetails.update(filmData);
-      updateFilms();
+          filmDetails.update(filmData);
+          updateFilms();
 
-      filters.find((filter) => filter.getHref === `#watchlist`).update(watchList.length);
+          filters.find((filter) => filter.getHref === `#watchlist`).update(watchList.length);
+        })
+        .catch(() => film.shake());
     };
 
     film.onMarkAsWatched = ({isWatched}) => {
       filmData.isWatched = isWatched;
-      film.update(filmData);
+      filmsApi.update(FILMS_URL, film.id, filmData)
+        .then(() => {
+          film.update(filmData);
 
-      filmDetails.update(filmData);
-      updateFilms();
+          filmDetails.update(filmData);
+          updateFilms();
 
-      filters.find((filter) => filter.getHref === `#history`).update(watchedFilms.length);
+          filters.find((filter) => filter.getHref === `#history`).update(watchedFilms.length);
+        })
+        .catch(() => film.shake());
     };
 
     film.onMarkAsFavorite = ({isFavorite}) => {
       filmData.isFavorite = isFavorite;
-      film.update(filmData);
+      filmsApi.update(FILMS_URL, film.id, filmData)
+        .then(() => {
+          film.update(filmData);
 
-      filmDetails.update(filmData);
-      updateFilms();
+          filmDetails.update(filmData);
+          updateFilms();
 
-      filters.find((filter) => filter.getHref === `#favorites`).update(favoritesFilms.length);
+          filters.find((filter) => filter.getHref === `#favorites`).update(favoritesFilms.length);
+        })
+        .catch(() => film.shake());
     };
 
     filmDetails.onClose = () => {
@@ -208,27 +189,55 @@ const renderFilms = (films, container, isExtra = false) => {
     };
 
     filmDetails.onMessageSubmit = ({comments}) => {
+      filmDetails.removeErrorStylesFromMessageForm();
+
       filmData.comments = comments;
 
-      film.update(filmData);
-      film.element.replaceWith(film.render());
+      filmDetails.disableMessageForm();
 
-      filmDetails.update(filmData);
-      updateFilms();
+      filmsApi.update(FILMS_URL, film.id, filmData)
+        .then(() => {
+          film.update(filmData);
+          film.element.replaceWith(film.render());
+
+          filmDetails.update(filmData);
+          filmDetails.enableMessageForm();
+          updateFilms();
+        })
+        .catch(() => {
+          filmDetails.enableMessageForm();
+          filmDetails.addErrorStylesToMessageForm();
+          filmDetails.shakeMessageForm();
+        });
     };
 
     filmDetails.onRating = ({rating}) => {
+      filmDetails.removeErrorStylesFromRating();
+
       filmData.rating = rating;
 
-      film.update(filmData);
-      film.element.replaceWith(film.render());
+      filmDetails.disableRating();
 
-      filmDetails.update(filmData);
-      updateFilms();
+      filmsApi.update(FILMS_URL, film.id, filmData)
+        .then(() => {
+          film.update(filmData);
+          film.element.replaceWith(film.render());
+
+          filmDetails.update(filmData);
+          filmDetails.enableRating();
+          updateFilms();
+        })
+        .catch(() => {
+          filmDetails.enableRating();
+          filmDetails.addErrorStylesToRating();
+          filmDetails.shakeMessageRating();
+        });
     };
 
     filmDetails.onAddToWatchList = ({inWatchList}) => {
       filmData.inWatchList = inWatchList;
+      filmsApi.update(FILMS_URL, film.id, filmData);
+
       film.update(filmData);
 
       filmDetails.update(filmData);
@@ -239,6 +248,8 @@ const renderFilms = (films, container, isExtra = false) => {
 
     filmDetails.onMarkAsWatched = ({isWatched}) => {
       filmData.isWatched = isWatched;
+      filmsApi.update(FILMS_URL, film.id, filmData);
+
       film.update(filmData);
 
       filmDetails.update(filmData);
@@ -249,6 +260,8 @@ const renderFilms = (films, container, isExtra = false) => {
 
     filmDetails.onMarkAsFavorite = ({isFavorite}) => {
       filmData.isFavorite = isFavorite;
+      filmsApi.update(FILMS_URL, film.id, filmData);
+
       film.update(filmData);
 
       filmDetails.update(filmData);
@@ -268,13 +281,86 @@ const findActiveFilter = (items) => items.find((item) => {
 });
 
 const createFilters = (data) => data.map((item) => new Filter(item));
-const filters = createFilters(filtersData);
+
+const addLoadingMessage = () => {
+  FilmContainer.DEFAULT.innerHTML = `Loading movies...`;
+};
+
+const addErrorMessage = () => {
+  FilmContainer.DEFAULT.innerHTML = `Something went wrong while loading movies. Check your connection or try again later`;
+};
+
+const removeMessage = () => {
+  FilmContainer.DEFAULT.innerHTML = ``;
+};
+
+const startApplication = (films) => {
+  allFilms = films;
+
+  watchList = allFilms.filter((film) => film.inWatchList);
+  watchedFilms = allFilms.filter((film) => film.isWatched);
+  favoritesFilms = allFilms.filter((film) => film.isFavorite);
+
+  const filtersData = [
+    {
+      title: `All movies`,
+      href: `#all`,
+      isAdditional: false,
+      isActive: true
+    },
+    {
+      title: `Watchlist`,
+      href: `#watchlist`,
+      count: watchList.length,
+      isAdditional: false,
+    },
+    {
+      title: `History`,
+      href: `#history`,
+      count: watchedFilms.length,
+      isAdditional: false,
+    },
+    {
+      title: `Favorites`,
+      href: `#favorites`,
+      count: favoritesFilms.length,
+      isAdditional: false,
+    },
+    {
+      title: `Stats`,
+      href: `#stats`,
+      isAdditional: true,
+    },
+  ];
+  filters = createFilters(filtersData);
+  statistic = new Stastic(watchedFilms);
+
+  removeMessage();
+
+  renderFilms(allFilms, FilmContainer.DEFAULT);
+  renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
+  renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
+
+  renderFilters(filters);
+};
+
+let allFilms = [];
+
+let watchList = [];
+let watchedFilms = [];
+let favoritesFilms = [];
+
+let filters = [];
 let currentFilter = null;
 
-renderFilters(filters);
+let statistic = null;
 
-renderFilms(allFilms, FilmContainer.DEFAULT);
-renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
-renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
+addLoadingMessage();
+
+filmsApi.get(FILMS_URL)
+  .then((films) => startApplication(films))
+  .catch(() => {
+    addErrorMessage();
+  });
 
 

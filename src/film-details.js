@@ -1,10 +1,22 @@
 import moment from 'moment';
 
-import {ClassName, KEY_CODE, createElement} from './util';
+import {ClassName, KEY_CODE, ANIMATION_TIMEOUT} from './util';
 
 import FilmComponent from './film-component';
 
 const MAX_RATING = 9;
+
+const SmileNameToSmile = {
+  'sleeping': `😴`,
+  'neutral-face': `😐`,
+  'grinning': `😀`,
+};
+
+const Color = {
+  ERROR: `red`,
+  DEFAULT: `#979797`,
+  DEFAULT_RATING: `#d8d8d8`,
+};
 
 export default class FilmDetails extends FilmComponent {
   constructor(dataFilm) {
@@ -12,6 +24,8 @@ export default class FilmDetails extends FilmComponent {
 
     this._buttonClose = null;
     this._commentTextArea = null;
+    this._ratingInputs = null;
+    this._ratingLabels = null;
     this._form = null;
     this._labelWatchlist = null;
     this._labelWatched = null;
@@ -23,6 +37,9 @@ export default class FilmDetails extends FilmComponent {
     this._onAddToWatchList = null;
     this._onMarkAsWatched = null;
     this._onMarkAsFavorite = null;
+
+    this._ratingLabelsArray = null;
+    this._ratingInputsArray = null;
 
     this._onCloseButtonClick = this._onCloseButtonClick.bind(this);
     this._onEscButtonPush = this._onEscButtonPush.bind(this);
@@ -38,9 +55,9 @@ export default class FilmDetails extends FilmComponent {
       <ul class="film-details__comments-list">
         ${ this._comments.map((comment) => (`
           <li class="film-details__comment">
-            <span class="film-details__comment-emoji">😴</span>
+            <span class="film-details__comment-emoji">${ SmileNameToSmile[comment.emotion] }</span>
             <div>
-              <p class="film-details__comment-text">${ comment.text }</p>
+              <p class="film-details__comment-text">${ comment.comment }</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${ comment.author }</span>
                 <span class="film-details__comment-day">${ moment(comment.date).format(`DD MM YY`) }</span>
@@ -62,38 +79,38 @@ export default class FilmDetails extends FilmComponent {
           <div class="film-details__poster">
             <img class="film-details__poster-img" src="${ this._poster }" alt="${ this._title }">
 
-            <p class="film-details__age">18+</p>
+            <p class="film-details__age">${ this._ageRating }+</p>
           </div>
 
           <div class="film-details__info">
             <div class="film-details__info-head">
               <div class="film-details__title-wrap">
                 <h3 class="film-details__title">${ this._title }</h3>
-                <p class="film-details__title-original">Original: Невероятная семейка</p>
+                <p class="film-details__title-original">${ this._alternativeTitle }</p>
               </div>
 
               <div class="film-details__rating">
-                <p class="film-details__total-rating">${ this._rating }</p>
-                <p class="film-details__user-rating">Your rate 8</p>
+                <p class="film-details__total-rating">${ this._totalRating }</p>
+                ${ this._rating ? `<p class="film-details__user-rating">Your rate ${ this._rating }</p>` : ``}
               </div>
             </div>
 
             <table class="film-details__table">
               <tr class="film-details__row">
                 <td class="film-details__term">Director</td>
-                <td class="film-details__cell">Brad Bird</td>
+                <td class="film-details__cell">${ this._director }</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">Brad Bird</td>
+                <td class="film-details__cell">${ [...this._writers].join(`, `) }</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">Samuel L. Jackson, Catherine Keener, Sophia Bush</td>
-              </tr>
-              <tr class="film-details__row">
-                <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${ moment(this._date).format(`DD MMMM YYYY`) } (USA)</td>
+                <td class="film-details__cell">${ [...this._actors].join(`, `) }</td>
+                </tr>
+                <tr class="film-details__row">
+                  <td class="film-details__term">Release Date</td>
+                  <td class="film-details__cell">${ moment(this._date).format(`DD MMMM YYYY`) } (USA)</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
@@ -101,14 +118,14 @@ export default class FilmDetails extends FilmComponent {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
-                <td class="film-details__cell">USA</td>
+                <td class="film-details__cell">${ this._releaseCountry }</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Genres</td>
                 <td class="film-details__cell">
-                  <span class="film-details__genre">Animation</span>
-                  <span class="film-details__genre">Action</span>
-                  <span class="film-details__genre">Adventure</span></td>
+                   ${ [...this._genres].map((genre) => `
+                      <span class="film-details__genre">${ genre }</span>
+                    `.trim()).join(``)}
               </tr>
             </table>
 
@@ -262,6 +279,7 @@ export default class FilmDetails extends FilmComponent {
 
   _processComment(formData) {
     const entry = {
+      emotion: null,
       comments: this._comments,
     };
 
@@ -269,8 +287,7 @@ export default class FilmDetails extends FilmComponent {
 
     for (const pair of formData.entries()) {
       const [property, value] = pair;
-
-      if (property === `comment` && taskEditMapper[property]) {
+      if (taskEditMapper[property]) {
         taskEditMapper[property](value);
       }
     }
@@ -280,16 +297,22 @@ export default class FilmDetails extends FilmComponent {
 
   static createMapper(target) {
     return {
-      comment: (value) => {
+      'comment-emoji': (value) => {
+        if (value) {
+          target.emotion = value;
+        }
+      },
+      'comment': (value) => {
         if (value) {
           target.comments.push({
-            text: value,
+            emotion: target.emotion,
+            comment: value,
             author: `Author`,
             date: new Date()
           });
         }
       },
-      score: (value) => {
+      'score': (value) => {
         target.rating = parseInt(value, 10);
       },
     };
@@ -394,6 +417,14 @@ export default class FilmDetails extends FilmComponent {
     return this._element.querySelector(`.${ ClassName.LABEL.FAVORITE }`);
   }
 
+  _getRatingInputs() {
+    return this._element.querySelectorAll(`.${ ClassName.RATING.INPUT }`);
+  }
+
+  _getRatingLabels() {
+    return this._element.querySelectorAll(`.${ ClassName.RATING.LABEL }`);
+  }
+
   _addEventListener() {
     this._buttonClose.addEventListener(`click`, this._onCloseButtonClick);
     document.addEventListener(`keyup`, this._onEscButtonPush);
@@ -416,18 +447,78 @@ export default class FilmDetails extends FilmComponent {
     this._labelFavorite.removeEventListener(`click`, this._onMarkAsFavoriteClick);
   }
 
-  render() {
-    this._element = createElement(this._template);
-
+  _updateElementsVariables() {
     this._buttonClose = this._getButtonClose();
     this._commentTextArea = this._getCommentTextArea();
+    this._ratingInputs = this._getRatingInputs();
     this._form = this._getForm();
     this._labelWatchlist = this._getLabelWatchlist();
     this._labelWatched = this._getLabelWatched();
     this._labelFavorite = this._getLabelFavorite();
+    this._ratingLabels = this._getRatingLabels();
+    this._ratingLabelsArray = [...this._ratingLabels];
+    this._ratingInputsArray = [...this._ratingInputs];
+  }
 
-    this._addEventListener();
+  shakeMessageForm() {
+    this._commentTextArea.style.animation = `${ClassName.SHAKE} ${ANIMATION_TIMEOUT / 1000}s`;
 
-    return this._element;
+    setTimeout(() => {
+      this._commentTextArea.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
+  addErrorStylesToMessageForm() {
+    this._commentTextArea.style.borderColor = Color.ERROR;
+  }
+
+  removeErrorStylesFromMessageForm() {
+    this._commentTextArea.style.borderColor = Color.DEFAULT;
+  }
+
+  disableMessageForm() {
+    this._commentTextArea.disabled = true;
+  }
+
+  enableMessageForm() {
+    this._commentTextArea.disabled = false;
+  }
+
+  disableRating() {
+    this._ratingInputsArray.forEach((input) => {
+      input.disabled = true;
+    });
+  }
+
+  enableRating() {
+    this._ratingInputsArray.forEach((input) => {
+      input.disabled = false;
+    });
+  }
+
+  addErrorStylesToRating() {
+    this._ratingInputsArray.forEach((input, index) => {
+      if (input.checked) {
+        this._ratingLabelsArray[index].style.backgroundColor = Color.ERROR;
+      }
+    });
+  }
+
+  removeErrorStylesFromRating() {
+    this._ratingLabelsArray.forEach((label) => {
+      label.style.backgroundColor = Color.DEFAULT_RATING;
+    });
+  }
+
+  shakeMessageRating() {
+    this._ratingInputsArray.forEach((input, index) => {
+      if (input.checked) {
+        this._ratingLabelsArray[index].style.animation = `${ClassName.SHAKE} ${ANIMATION_TIMEOUT / 1000}s`;
+
+        setTimeout(() => {
+          this._ratingLabelsArray[index].style.animation = ``;
+        }, ANIMATION_TIMEOUT);
+      }
+    });
   }
 }

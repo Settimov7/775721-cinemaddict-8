@@ -20,13 +20,13 @@ export default class Stastic extends Component {
   }
 
   get _genres() {
-    return [...new Set(this._films.map((film) => film.genre))];
+    return [...new Set(this._films.reduce((genres, film) => [...genres, ...film.genres], []))];
   }
 
   get _genresData() {
     return this._genres.map((genre) => {
       return this._films.reduce(((counter, film) => {
-        return (film.genre === genre) ? (counter + 1) : counter;
+        return ([...film.genres].some((item) => item === genre) ? (counter + 1) : counter);
       }), 0);
     });
   }
