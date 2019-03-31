@@ -3,11 +3,8 @@ self.addEventListener(`install`, (evt) => {
     .then((cache) => {
       return cache.addAll([
         `./`,
-        `./css/`,
         `./css/main.css`,
         `./css/normalize.css`,
-        `./images/`,
-        `./images/posters/`,
         `./images/posters/accused.jpg`,
         `./images/posters/blackmail.jpg`,
         `./images/posters/blue-blazes.jpg`,
