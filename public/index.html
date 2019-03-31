@@ -90,7 +90,13 @@
     </footer>
 
     <script>
-      navigator.serviceWorker.register(`./sw.js`);
+      navigator.serviceWorker.register(`./sw.js`)
+        .then(function(reg) {
+            console.log('Registration succeeded. Scope is ' + reg.scope);
+        })
+        .catch(function(error) {
+            console.log('Registration failed with ' + error);
+        });
     </script>
     <script src="./bundle.js"></script>
   </body>
