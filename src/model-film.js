@@ -1,6 +1,5 @@
 export default class ModelFilm {
   constructor(data) {
-    console.log(data);
     this.id = data[`id`];
     this.comments = data[`comments`].map(({author, emotion, comment, date}) => ({
       author,
