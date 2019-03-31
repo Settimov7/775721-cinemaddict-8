@@ -44,7 +44,7 @@ export default class Provider {
     } else {
       const itemsObject = this._store.getAll();
       const itemsArray = objectToArray(itemsObject);
-      const items = ModelFilm.parseItem(itemsArray);
+      const items = ModelFilm.parseData(itemsArray);
 
       return Promise.resolve(items);
     }
