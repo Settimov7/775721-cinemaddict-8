@@ -33,6 +33,6 @@ self.addEventListener(`fetch`, (evt) => {
   evt.respondWith(
     caches.match(evt.request)
       .then((response) => response ? response : fetch(evt.request))
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
   );
 });
