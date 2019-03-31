@@ -1,19 +1,33 @@
 import {ClassName, Quantity} from './util';
 import Api from './api';
+import Provider from './provider';
 
 import Stastic from './statistic';
 import Film from './film';
 import ExtraFilm from './extra-film';
 import FilmDetails from './film-details';
 import Filter from './filter';
+import Store from "./store";
 
 const FILMS_PATH = `https://es8-demo-srv.appspot.com/moowle/`;
 const FILMS_URL = `movies`;
 const AUTHORIZATION = `Basic eo0dasdada889a`;
+const STORE_KEY = `films-store-key`;
 
 const filmsApi = new Api({
   path: FILMS_PATH,
   authorization: AUTHORIZATION
+});
+const store = new Store(STORE_KEY, localStorage);
+const provider = new Provider(filmsApi, store, () => String(Date.now()));
+
+window.addEventListener(`offline`, () => {
+  document.title = `${document.title}[OFFLINE]`;
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.split(`[OFFLINE]`)[0];
+  provider.syncTasks(FILMS_URL);
 });
 
 const main = document.querySelector(`.${ ClassName.MAIN }`);
@@ -143,7 +157,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
     film.onAddToWatchList = ({inWatchList}) => {
       filmData.inWatchList = inWatchList;
-      filmsApi.update(FILMS_URL, film.id, filmData)
+      provider.update(FILMS_URL, film.id, filmData)
         .then(() => {
           film.update(filmData);
 
@@ -157,7 +171,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
     film.onMarkAsWatched = ({isWatched}) => {
       filmData.isWatched = isWatched;
-      filmsApi.update(FILMS_URL, film.id, filmData)
+      provider.update(FILMS_URL, film.id, filmData)
         .then(() => {
           film.update(filmData);
 
@@ -171,7 +185,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
     film.onMarkAsFavorite = ({isFavorite}) => {
       filmData.isFavorite = isFavorite;
-      filmsApi.update(FILMS_URL, film.id, filmData)
+      provider.update(FILMS_URL, film.id, filmData)
         .then(() => {
           film.update(filmData);
 
@@ -195,7 +209,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
       filmDetails.disableMessageForm();
 
-      filmsApi.update(FILMS_URL, film.id, filmData)
+      provider.update(FILMS_URL, film.id, filmData)
         .then(() => {
           film.update(filmData);
           film.element.replaceWith(film.render());
@@ -218,7 +232,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
       filmDetails.disableRating();
 
-      filmsApi.update(FILMS_URL, film.id, filmData)
+      provider.update(FILMS_URL, film.id, filmData)
         .then(() => {
           film.update(filmData);
           film.element.replaceWith(film.render());
@@ -236,7 +250,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
     filmDetails.onAddToWatchList = ({inWatchList}) => {
       filmData.inWatchList = inWatchList;
-      filmsApi.update(FILMS_URL, film.id, filmData);
+      provider.update(FILMS_URL, film.id, filmData);
 
       film.update(filmData);
 
@@ -248,7 +262,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
     filmDetails.onMarkAsWatched = ({isWatched}) => {
       filmData.isWatched = isWatched;
-      filmsApi.update(FILMS_URL, film.id, filmData);
+      provider.update(FILMS_URL, film.id, filmData);
 
       film.update(filmData);
 
@@ -260,7 +274,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
     filmDetails.onMarkAsFavorite = ({isFavorite}) => {
       filmData.isFavorite = isFavorite;
-      filmsApi.update(FILMS_URL, film.id, filmData);
+      provider.update(FILMS_URL, film.id, filmData);
 
       film.update(filmData);
 
@@ -357,8 +371,8 @@ let statistic = null;
 
 addLoadingMessage();
 
-filmsApi.get(FILMS_URL)
-  .then((films) => startApplication(films))
+provider.get(FILMS_URL)
+  .then(startApplication)
   .catch(() => {
     addErrorMessage();
   });
