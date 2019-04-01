@@ -18,6 +18,7 @@ export const ClassName = {
     LIST: `films-list`,
     EXTRA_LIST: `films-list--extra`,
     CONTAINER: `films-list__container`,
+    SHOW_MORE: `films-list__show-more`,
   },
   BUTTON: {
     COMMENTS: `film-card__comments`,
