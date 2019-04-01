@@ -326,14 +326,12 @@ const showElement = (element) => {
 };
 
 const checkFilmsQuantity = () => {
-  console.log(currentFilteredFilms);
-  console.log(currentMaxQuantityFilms);
   if (currentFilteredFilms <= currentMaxQuantityFilms) {
     hideElement(showMore);
   } else {
     showElement(showMore);
   }
-}
+};
 
 const onShowMoreClick = () => {
   if (currentMaxQuantityFilms < currentFilteredFilms) {
