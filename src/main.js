@@ -35,6 +35,7 @@ const main = document.querySelector(`.${ ClassName.MAIN }`);
 const filmsElement = document.querySelector(`.${ ClassName.FILMS.DEFAULT }`);
 const filmContainers = document.querySelectorAll(`.${ ClassName.FILMS.CONTAINER }`);
 const filmDetailsParent = document.querySelector(`${ ClassName.BODY }`);
+const showMore = document.querySelector(`.${ ClassName.FILMS.SHOW_MORE }`);
 
 const mainNavigation = document.querySelector(`.${ ClassName.MAIN_NAVIGATION }`);
 
@@ -61,7 +62,7 @@ const renderFilters = (filters) => {
   filters.forEach((filter) => {
     filter.onFilter = (typeFilter) => {
       const activeFilter = findActiveFilter(filters);
-
+      currentMaxQuantityFilms = Quantity.MAX_CARDS.DEFAULT;
       activeFilter.changeStatus();
       filterFilms(typeFilter);
     };
@@ -89,6 +90,8 @@ const filterFilms = (typeFilter) => {
       showFilms();
       renderFilms(allFilms, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
+      currentFilteredFilms = allFilms.length;
+      checkFilmsQuantity();
       break;
     }
 
@@ -97,6 +100,8 @@ const filterFilms = (typeFilter) => {
       showFilms();
       renderFilms(watchList, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
+      currentFilteredFilms = watchList.length;
+      checkFilmsQuantity();
       break;
     }
 
@@ -105,6 +110,8 @@ const filterFilms = (typeFilter) => {
       showFilms();
       renderFilms(watchedFilms, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
+      currentFilteredFilms = watchedFilms.length;
+      checkFilmsQuantity();
       break;
     }
 
@@ -113,6 +120,8 @@ const filterFilms = (typeFilter) => {
       showFilms();
       renderFilms(favoritesFilms, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
+      currentFilteredFilms = favoritesFilms.length;
+      checkFilmsQuantity();
       break;
     }
 
@@ -142,7 +151,7 @@ const updateFilms = () => {
 
 const renderFilms = (films, container, isExtra = false) => {
   const fragment = document.createDocumentFragment();
-  const maxFilms = isExtra ? Quantity.MAX_CARDS.EXTRA : Quantity.MAX_CARDS.DEFAULT;
+  const maxFilms = isExtra ? Quantity.MAX_CARDS.EXTRA : currentMaxQuantityFilms;
 
   for (let i = 0; i < (films.length < maxFilms ? films.length : maxFilms); i++) {
     let filmData = films[i];
@@ -308,6 +317,32 @@ const removeMessage = () => {
   FilmContainer.DEFAULT.innerHTML = ``;
 };
 
+const hideElement = (element) => {
+  element.classList.add(ClassName.VISUALLY_HIDDEN);
+};
+
+const showElement = (element) => {
+  element.classList.remove(ClassName.VISUALLY_HIDDEN);
+};
+
+const checkFilmsQuantity = () => {
+  console.log(currentFilteredFilms);
+  console.log(currentMaxQuantityFilms);
+  if (currentFilteredFilms <= currentMaxQuantityFilms) {
+    hideElement(showMore);
+  } else {
+    showElement(showMore);
+  }
+}
+
+const onShowMoreClick = () => {
+  if (currentMaxQuantityFilms < currentFilteredFilms) {
+    currentMaxQuantityFilms += Quantity.MAX_CARDS.DEFAULT;
+
+    filterFilms(currentFilter);
+  }
+};
+
 const startApplication = (films) => {
   allFilms = films;
 
@@ -350,12 +385,14 @@ const startApplication = (films) => {
   statistic = new Stastic(watchedFilms);
 
   removeMessage();
-
+  currentFilteredFilms = allFilms.length;
+  checkFilmsQuantity();
   renderFilms(allFilms, FilmContainer.DEFAULT);
   renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
   renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
 
   renderFilters(filters);
+  showMore.addEventListener(`click`, onShowMoreClick);
 };
 
 let allFilms = [];
@@ -365,7 +402,9 @@ let watchedFilms = [];
 let favoritesFilms = [];
 
 let filters = [];
-let currentFilter = null;
+let currentFilter = `#all`;
+let currentMaxQuantityFilms = Quantity.MAX_CARDS.DEFAULT;
+let currentFilteredFilms = null;
 
 let statistic = null;
 
