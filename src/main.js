@@ -159,7 +159,12 @@ const renderFilms = (films, container, isExtra = false) => {
     let filmDetails = new FilmDetails(filmData);
 
     film.onCommentClick = () => {
+      if (currentFilmDetails && currentFilmDetails.element) {
+        currentFilmDetails.unrender();
+      }
+
       if (!filmDetails.element) {
+        currentFilmDetails = filmDetails;
         filmDetailsParent.append(filmDetails.render());
       }
     };
@@ -403,6 +408,7 @@ let filters = [];
 let currentFilter = `#all`;
 let currentMaxQuantityFilms = Quantity.MAX_CARDS.DEFAULT;
 let currentFilteredFilms = null;
+let currentFilmDetails = null;
 
 let statistic = null;
 
