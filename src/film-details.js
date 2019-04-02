@@ -22,6 +22,8 @@ export default class FilmDetails extends FilmComponent {
   constructor(dataFilm) {
     super(dataFilm);
 
+    this._isControlsVisible = false;
+
     this._buttonClose = null;
     this._commentTextArea = null;
     this._ratingInputs = null;
@@ -30,6 +32,8 @@ export default class FilmDetails extends FilmComponent {
     this._labelWatchlist = null;
     this._labelWatched = null;
     this._labelFavorite = null;
+    this._ratingControls = null;
+    this._commentDelete = null;
 
     this._onClose = null;
     this._onMessageSubmit = null;
@@ -37,6 +41,7 @@ export default class FilmDetails extends FilmComponent {
     this._onAddToWatchList = null;
     this._onMarkAsWatched = null;
     this._onMarkAsFavorite = null;
+    this._onMessageDelete = null;
 
     this._ratingLabelsArray = null;
     this._ratingInputsArray = null;
@@ -48,6 +53,7 @@ export default class FilmDetails extends FilmComponent {
     this._onAddToWatchListClick = this._onAddToWatchListClick.bind(this);
     this._onMarkAsWatchedClick = this._onMarkAsWatchedClick.bind(this);
     this._onMarkAsFavoriteClick = this._onMarkAsFavoriteClick.bind(this);
+    this._onMessageDeleteClick = this._onMessageDeleteClick.bind(this);
   }
 
   get _commentsTemplate() {
@@ -174,8 +180,8 @@ export default class FilmDetails extends FilmComponent {
         </section>
 
         <section class="film-details__user-rating-wrap">
-          <div class="film-details__user-rating-controls">
-            <span class="film-details__watched-status film-details__watched-status--active">Already watched</span>
+          <div class="film-details__user-rating-controls ${ this._isControlsVisible ? `` : `visually-hidden`}">
+            <span class="film-details__watched-status ${ this._isWatched ? `film-details__watched-status--active` : `` } ">${ this._isWatched ? `Already watched` : `Will watch`}</span>
             <button class="film-details__watched-reset" type="button">undo</button>
           </div>
 
@@ -238,6 +244,10 @@ export default class FilmDetails extends FilmComponent {
 
   set onMarkAsFavorite(func) {
     this._onMarkAsFavorite = func;
+  }
+
+  set onMessageDelete(func) {
+    this._onMessageDelete = func;
   }
 
   _processForm(formData) {
@@ -343,11 +353,10 @@ export default class FilmDetails extends FilmComponent {
 
   _onCtrlEnterPush(evt) {
     evt.preventDefault();
-
     if (evt.ctrlKey && evt.keyCode === KEY_CODE.ENTER && typeof this._onMessageSubmit === `function`) {
       const formData = new FormData(this._element.querySelector(`.${ ClassName.FORM }`));
       const newData = this._processComment(formData);
-
+      this._isControlsVisible = true;
       this._onMessageSubmit(newData);
     }
   }
@@ -393,6 +402,18 @@ export default class FilmDetails extends FilmComponent {
     }
   }
 
+  _onMessageDeleteClick(evt) {
+    evt.preventDefault();
+    if (typeof this._onMessageDelete === `function`) {
+      const newData = {
+        comments: [...this._comments]
+      };
+      newData.comments.pop();
+      this._isControlsVisible = false;
+      this._onMessageDelete(newData);
+    }
+  }
+
   _getButtonClose() {
     return this._element.querySelector(`.${ ClassName.BUTTON.CLOSE }`);
   }
@@ -425,10 +446,19 @@ export default class FilmDetails extends FilmComponent {
     return this._element.querySelectorAll(`.${ ClassName.RATING.LABEL }`);
   }
 
+  _getRatingControls() {
+    return this._element.querySelector(`.${ ClassName.RATING.CONTROLS }`);
+  }
+
+  _getDeleteCommentButton() {
+    return this._element.querySelector(`.${ ClassName.DELETE_COMMENT }`);
+  }
+
   _addEventListener() {
     this._buttonClose.addEventListener(`click`, this._onCloseButtonClick);
     document.addEventListener(`keyup`, this._onEscButtonPush);
     this._commentTextArea.addEventListener(`keyup`, this._onCtrlEnterPush);
+    this._commentDelete.addEventListener(`click`, this._onMessageDeleteClick);
     this._form.addEventListener(`change`, this._onRatingChange);
 
     this._labelWatchlist.addEventListener(`click`, this._onAddToWatchListClick);
@@ -440,6 +470,7 @@ export default class FilmDetails extends FilmComponent {
     this._buttonClose.removeEventListener(`click`, this._onCloseButtonClick);
     document.removeEventListener(`keyup`, this._onEscButtonPush);
     this._commentTextArea.removeEventListener(`keyup`, this._onCtrlEnterPush);
+    this._commentDelete.removeEventListener(`click`, this._onMessageDeleteClick);
     this._form.removeEventListener(`change`, this._onRatingChange);
 
     this._labelWatchlist.removeEventListener(`click`, this._onAddToWatchListClick);
@@ -456,6 +487,8 @@ export default class FilmDetails extends FilmComponent {
     this._labelWatched = this._getLabelWatched();
     this._labelFavorite = this._getLabelFavorite();
     this._ratingLabels = this._getRatingLabels();
+    this._ratingControls = this._getRatingControls();
+    this._commentDelete = this._getDeleteCommentButton();
     this._ratingLabelsArray = [...this._ratingLabels];
     this._ratingInputsArray = [...this._ratingInputs];
   }

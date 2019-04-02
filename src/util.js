@@ -39,11 +39,13 @@ export const ClassName = {
   COMMENTS: `film-details__comments-list`,
   COMMENT_TEXTAREA: `film-details__comment-input`,
   COMMENTS_COUNTER: `film-details__comments-count`,
+  DELETE_COMMENT: `film-details__watched-reset`,
   RATING: {
     TOTAL: `film-details__total-rating`,
     INPUT: `film-details__user-rating-input`,
     LABEL: `film-details__user-rating-label`,
     CONTAINER: `film-details__user-rating-score`,
+    CONTROLS: `film-details__user-rating-controls`,
   },
   FILTER: {
     DEFAULT: `main-navigation__item`,
@@ -76,4 +78,12 @@ export const createElement = (template) => {
   newElement.innerHTML = template.trim();
 
   return newElement.content.firstChild;
+};
+
+export const hideElement = (element) => {
+  element.classList.add(ClassName.VISUALLY_HIDDEN);
+};
+
+export const showElement = (element) => {
+  element.classList.remove(ClassName.VISUALLY_HIDDEN);
 };

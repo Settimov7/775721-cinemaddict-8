@@ -1,4 +1,4 @@
-import {ClassName, Quantity} from './util';
+import {ClassName, Quantity, showElement, hideElement} from './util';
 import Api from './api';
 import Provider from './provider';
 
@@ -264,6 +264,22 @@ const renderFilms = (films, container, isExtra = false) => {
         });
     };
 
+    filmDetails.onMessageDelete = ({comments}) => {
+      filmData.comments = comments;
+
+      provider.update(FILMS_URL, film.id, filmData)
+        .then(() => {
+          film.update(filmData);
+          film.element.replaceWith(film.render());
+
+          filmDetails.update(filmData);
+          updateFilms();
+        })
+        .catch((error) => {
+          console.log(error);
+      });
+    };
+
     filmDetails.onRating = ({rating}) => {
       filmDetails.removeErrorStylesFromRating();
 
@@ -345,14 +361,6 @@ const addErrorMessage = () => {
 
 const removeMessage = () => {
   FilmContainer.DEFAULT.innerHTML = ``;
-};
-
-const hideElement = (element) => {
-  element.classList.add(ClassName.VISUALLY_HIDDEN);
-};
-
-const showElement = (element) => {
-  element.classList.remove(ClassName.VISUALLY_HIDDEN);
 };
 
 const checkFilmsQuantity = () => {
