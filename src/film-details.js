@@ -60,7 +60,7 @@ export default class FilmDetails extends FilmComponent {
               <p class="film-details__comment-text">${ comment.comment }</p>
               <p class="film-details__comment-info">
                 <span class="film-details__comment-author">${ comment.author }</span>
-                <span class="film-details__comment-day">${ moment(comment.date).format(`DD MM YY`) }</span>
+                <span class="film-details__comment-day">${ moment(comment.date).fromNow() }</span>
               </p>
             </div>
           </li>
