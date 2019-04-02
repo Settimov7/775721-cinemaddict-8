@@ -274,10 +274,7 @@ const renderFilms = (films, container, isExtra = false) => {
 
           filmDetails.update(filmData);
           updateFilms();
-        })
-        .catch((error) => {
-          console.log(error);
-      });
+        });
     };
 
     filmDetails.onRating = ({rating}) => {
