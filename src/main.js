@@ -36,6 +36,8 @@ const filmsElement = document.querySelector(`.${ ClassName.FILMS.DEFAULT }`);
 const filmContainers = document.querySelectorAll(`.${ ClassName.FILMS.CONTAINER }`);
 const filmDetailsParent = document.querySelector(`${ ClassName.BODY }`);
 const showMore = document.querySelector(`.${ ClassName.FILMS.SHOW_MORE }`);
+const filmsCounter = document.querySelector(`.${ ClassName.FILMS.COUNTER }`);
+const userRating = document.querySelector(`.${ ClassName.FILMS.RATING }`);
 
 const mainNavigation = document.querySelector(`.${ ClassName.MAIN_NAVIGATION }`);
 
@@ -43,6 +45,29 @@ const FilmContainer = {
   DEFAULT: filmContainers[0],
   TOP_RATED: filmContainers[1],
   MOST_COMMENTED: filmContainers[2]
+};
+
+const RATINGS = {
+  NOVICE: {
+    TITLE: `novice`,
+    RESTRICTIONS: {
+      MIN: 1,
+      MAX: 10
+    },
+  },
+  FUN: {
+    TITLE: `fun`,
+    RESTRICTIONS: {
+      MIN: 11,
+      MAX: 19
+    },
+  },
+  BUFF: {
+    TITLE: `movie buff`,
+    RESTRICTIONS: {
+      MIN: 20,
+    },
+  }
 };
 
 const sortFilmsByRating = ({totalRating: a}, {totalRating: b}) => b - a;
@@ -145,7 +170,7 @@ const updateFilms = () => {
   favoritesFilms = allFilms.filter((film) => film.isFavorite);
 
   statistic.update(watchedFilms);
-
+  updateRating(watchedFilms.length);
   filterFilms(currentFilter);
 };
 
@@ -346,6 +371,27 @@ const onShowMoreClick = () => {
   }
 };
 
+const updateFilmsCounter = (quantity) => {
+  filmsCounter.innerHTML = `<p>${ quantity } movies inside</p>`;
+};
+
+const updateRating = (quantity) => {
+  let rating = ``;
+  if (quantity >= RATINGS.NOVICE.RESTRICTIONS.MIN && quantity <= RATINGS.NOVICE.RESTRICTIONS.MAX) {
+    rating = RATINGS.NOVICE.TITLE;
+  }
+
+  if (quantity >= RATINGS.FUN.RESTRICTIONS.MIN && quantity <= RATINGS.FUN.RESTRICTIONS.MAX) {
+    rating = RATINGS.FUN.TITLE;
+  }
+
+  if (quantity >= RATINGS.BUFF.RESTRICTIONS.MIN) {
+    rating = RATINGS.BUFF.TITLE;
+  }
+
+  userRating.textContent = rating;
+};
+
 const startApplication = (films) => {
   allFilms = films;
 
@@ -390,6 +436,8 @@ const startApplication = (films) => {
   removeMessage();
   currentFilteredFilms = allFilms.length;
   checkFilmsQuantity();
+  updateFilmsCounter(allFilms.length);
+  updateRating(watchedFilms.length);
   renderFilms(allFilms, FilmContainer.DEFAULT);
   renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
   renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);

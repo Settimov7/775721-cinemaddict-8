@@ -20,7 +20,7 @@ export default class Provider {
     if (this._isOnline()) {
       return this._api.update(url, id, data)
         .then((item) => {
-          this._store.setItem(item.id, item.parseBack());
+          this._store.setItem(item.id, item);
 
           return item;
         });

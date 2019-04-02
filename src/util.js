@@ -20,6 +20,8 @@ export const ClassName = {
     CONTAINER: `films-list__container`,
     SHOW_MORE: `films-list__show-more`,
     DETAILS: `film-details`,
+    COUNTER: `footer__statistics`,
+    RATING: `profile__rating`,
   },
   BUTTON: {
     COMMENTS: `film-card__comments`,
