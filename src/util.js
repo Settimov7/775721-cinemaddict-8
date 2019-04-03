@@ -62,6 +62,7 @@ export const ClassName = {
     TEXT: `statistic__item-text`,
   },
   SHAKE: `shake`,
+  SEARCH: `search__field`,
 };
 
 export const ANIMATION_TIMEOUT = 600;
