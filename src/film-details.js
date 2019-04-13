@@ -389,7 +389,7 @@ export default class FilmDetails extends FilmComponent {
     evt.preventDefault();
 
     if (typeof this._onMarkAsWatched === `function`) {
-      const newData = {isWatched: !this._isWatched};
+      const newData = {isWatched: !this._isWatched, watchingDate: Date.now()};
 
       this._onMarkAsWatched(newData);
     }

@@ -2,7 +2,7 @@ import Component from './component';
 
 export default class FilmComponent extends Component {
   constructor({id, title, alternativeTitle, totalRating, rating, releaseDate, duration, genres, poster, description,
-    comments, ageRating, director, writers, actors, releaseCountry,
+    comments, ageRating, director, writers, actors, releaseCountry, watchingDate,
     inWatchList = false, isWatched = false, isFavorite = false}) {
     super();
 
@@ -26,6 +26,7 @@ export default class FilmComponent extends Component {
     this._writers = writers;
     this._actors = actors;
     this._releaseCountry = releaseCountry;
+    this._watchingDate = watchingDate;
     this._inWatchList = inWatchList;
     this._isWatched = isWatched;
     this._isFavorite = isFavorite;
@@ -46,9 +47,10 @@ export default class FilmComponent extends Component {
     }
   }
 
-  update({rating, comments, inWatchList, isWatched, isFavorite}) {
+  update({rating, comments, inWatchList, isWatched, isFavorite, watchingDate}) {
     this._rating = rating;
     this._comments = comments;
+    this._watchingDate = watchingDate;
     this._inWatchList = inWatchList;
     this._isWatched = isWatched;
     this._isFavorite = isFavorite;

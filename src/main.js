@@ -219,8 +219,9 @@ const renderFilms = (films, container, isExtra = false) => {
         .catch(() => film.shake());
     };
 
-    film.onMarkAsWatched = ({isWatched}) => {
+    film.onMarkAsWatched = ({isWatched, watchingDate}) => {
       filmData.isWatched = isWatched;
+      filmData.watchingDate = isWatched ? watchingDate : null;
       provider.update(FILMS_URL, film.id, filmData)
         .then(() => {
           film.update(filmData);
@@ -323,8 +324,9 @@ const renderFilms = (films, container, isExtra = false) => {
       filters.find((filter) => filter.getHref === `#watchlist`).update(watchList.length);
     };
 
-    filmDetails.onMarkAsWatched = ({isWatched}) => {
+    filmDetails.onMarkAsWatched = ({isWatched, watchingDate}) => {
       filmData.isWatched = isWatched;
+      filmData.watchingDate = isWatched ? watchingDate : null;
       provider.update(FILMS_URL, film.id, filmData);
 
       film.update(filmData);
