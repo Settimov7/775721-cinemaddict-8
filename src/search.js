@@ -35,9 +35,8 @@ export default class Search extends Component {
 
   _onInput(evt) {
     evt.preventDefault();
-
-    if (typeof this._onSearch === `function`) {
-      this._onSearch();
+    if (typeof this._onInputSearch === `function`) {
+      this._onInputSearch();
     }
   }
 

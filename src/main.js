@@ -40,8 +40,6 @@ const showMore = document.querySelector(`.${ ClassName.FILMS.SHOW_MORE }`);
 const filmsCounter = document.querySelector(`.${ ClassName.FILMS.COUNTER }`);
 const userRating = document.querySelector(`.${ ClassName.FILMS.RATING }`);
 
-// const search = document.querySelector(`.${ ClassName.SEARCH }`);
-
 const mainNavigation = document.querySelector(`.${ ClassName.MAIN_NAVIGATION }`);
 
 const FilmContainer = {
