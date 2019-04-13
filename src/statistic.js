@@ -45,7 +45,7 @@ export default class Stastic extends Component {
     return this._genres[this._genresData.indexOf(Math.max(...this._genresData))];
   }
 
-  static get _chart() {
+  get _chart() {
     const statisticCtx = this._element.querySelector(`.${ ClassName.STATISTIC.CHART }`);
 
     statisticCtx.height = BAR_HEIGHT * this._genres.length;
