@@ -60,9 +60,14 @@ export const ClassName = {
     CHART: `statistic__chart`,
     BUTTON: `main-navigation__item--additional`,
     TEXT: `statistic__item-text`,
+    FORM: `statistic__filters`,
+    LABEL: `statistic__filters-label`,
+    INPUT: `statistic__filters-input`,
   },
   SHAKE: `shake`,
   SEARCH: `search__field`,
+  HEADER: `header`,
+  PROFILE: `header__profile`,
 };
 
 export const ANIMATION_TIMEOUT = 600;

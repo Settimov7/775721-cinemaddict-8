@@ -24,6 +24,7 @@ export default class ModelFilm {
     this.isFavorite = data[`user_details`][`favorite`];
     this.rating = parseInt(data[`user_details`][`personal_rating`], 10);
     this.inWatchList = data[`user_details`][`watchlist`];
+    this.watchingDate = new Date(data[`user_details`][`watching_date`]);
   }
 
   static parseItem(data) {

@@ -23,6 +23,7 @@ export default class FilmDetails extends FilmComponent {
     super(dataFilm);
 
     this._isControlsVisible = false;
+    this._isMessageDeleted = false;
 
     this._buttonClose = null;
     this._commentTextArea = null;
@@ -32,7 +33,6 @@ export default class FilmDetails extends FilmComponent {
     this._labelWatchlist = null;
     this._labelWatched = null;
     this._labelFavorite = null;
-    this._ratingControls = null;
     this._commentDelete = null;
 
     this._onClose = null;
@@ -180,9 +180,11 @@ export default class FilmDetails extends FilmComponent {
         </section>
 
         <section class="film-details__user-rating-wrap">
-          <div class="film-details__user-rating-controls ${ this._isControlsVisible ? `` : `visually-hidden`}">
-            <span class="film-details__watched-status ${ this._isWatched ? `film-details__watched-status--active` : `` } ">${ this._isWatched ? `Already watched` : `Will watch`}</span>
-            <button class="film-details__watched-reset" type="button">undo</button>
+          <div class="film-details__user-rating-controls ${this._isControlsVisible ? `` : `visually-hidden`}">
+              <span class="film-details__watched-status ${ this._isMessageDeleted ? `` : `film-details__watched-status--active` } ">
+              ${ this._isMessageDeleted ? `Comment deleted` : `Comment added` }
+            </span>
+            <button class="film-details__watched-reset ${ this._isMessageDeleted ? `visually-hidden` : `` }" type="button">undo</button>
           </div>
 
           <div class="film-details__user-score">
@@ -269,7 +271,7 @@ export default class FilmDetails extends FilmComponent {
     return entry;
   }
 
-  _processRating(formData) {
+  static _processRating(formData) {
     const entry = {
       rating: null,
     };
@@ -357,6 +359,7 @@ export default class FilmDetails extends FilmComponent {
       const formData = new FormData(this._element.querySelector(`.${ ClassName.FORM }`));
       const newData = this._processComment(formData);
       this._isControlsVisible = true;
+      this._isMessageDeleted = false;
       this._onMessageSubmit(newData);
     }
   }
@@ -366,7 +369,7 @@ export default class FilmDetails extends FilmComponent {
 
     if (target && typeof this._onRating === `function`) {
       const formData = new FormData(this._element.querySelector(`.${ ClassName.FORM }`));
-      const newData = this._processRating(formData);
+      const newData = FilmDetails._processRating(formData);
 
       this._onRating(newData);
     }
@@ -409,7 +412,7 @@ export default class FilmDetails extends FilmComponent {
         comments: [...this._comments]
       };
       newData.comments.pop();
-      this._isControlsVisible = false;
+      this._isMessageDeleted = true;
       this._onMessageDelete(newData);
     }
   }
@@ -444,10 +447,6 @@ export default class FilmDetails extends FilmComponent {
 
   _getRatingLabels() {
     return this._element.querySelectorAll(`.${ ClassName.RATING.LABEL }`);
-  }
-
-  _getRatingControls() {
-    return this._element.querySelector(`.${ ClassName.RATING.CONTROLS }`);
   }
 
   _getDeleteCommentButton() {
@@ -487,7 +486,6 @@ export default class FilmDetails extends FilmComponent {
     this._labelWatched = this._getLabelWatched();
     this._labelFavorite = this._getLabelFavorite();
     this._ratingLabels = this._getRatingLabels();
-    this._ratingControls = this._getRatingControls();
     this._commentDelete = this._getDeleteCommentButton();
     this._ratingLabelsArray = [...this._ratingLabels];
     this._ratingInputsArray = [...this._ratingInputs];

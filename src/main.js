@@ -7,11 +7,12 @@ import Film from './film';
 import ExtraFilm from './extra-film';
 import FilmDetails from './film-details';
 import Filter from './filter';
-import Store from "./store";
+import Store from './store';
+import Search from './search';
 
 const FILMS_PATH = `https://es8-demo-srv.appspot.com/moowle/`;
 const FILMS_URL = `movies`;
-const AUTHORIZATION = `Basic eo0dasdada889a`;
+const AUTHORIZATION = `Basic eo0f72h293f9a889a`;
 const STORE_KEY = `films-store-key`;
 
 const filmsApi = new Api({
@@ -39,7 +40,7 @@ const showMore = document.querySelector(`.${ ClassName.FILMS.SHOW_MORE }`);
 const filmsCounter = document.querySelector(`.${ ClassName.FILMS.COUNTER }`);
 const userRating = document.querySelector(`.${ ClassName.FILMS.RATING }`);
 
-const search = document.querySelector(`.${ ClassName.SEARCH }`);
+// const search = document.querySelector(`.${ ClassName.SEARCH }`);
 
 const mainNavigation = document.querySelector(`.${ ClassName.MAIN_NAVIGATION }`);
 
@@ -83,6 +84,10 @@ const showFilms = () => {
   }
 };
 
+const renderSearch = (search) => {
+  document.querySelector(`.${ ClassName.HEADER }`).insertBefore(search, document.querySelector(`.${ ClassName.PROFILE }`));
+};
+
 const renderFilters = (filters) => {
   const fragment = document.createDocumentFragment();
 
@@ -90,8 +95,10 @@ const renderFilters = (filters) => {
     filter.onFilter = (typeFilter) => {
       const activeFilter = findActiveFilter(filters);
       currentMaxQuantityFilms = Quantity.MAX_CARDS.DEFAULT;
-      activeFilter.changeStatus();
-      search.value = ``;
+      if (activeFilter) {
+        activeFilter.changeStatus();
+      }
+      search.reset();
       searchValue = ``;
       filterFilms(typeFilter);
     };
@@ -117,7 +124,7 @@ const filterFilms = (typeFilter) => {
     case `#all`: {
       FilmContainer.DEFAULT.innerHTML = ``;
       showFilms();
-      renderFilms(searchFilms(allFilms), FilmContainer.DEFAULT);
+      renderFilms(allFilms, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
       currentFilteredFilms = allFilms.length;
       checkFilmsQuantity();
@@ -127,7 +134,7 @@ const filterFilms = (typeFilter) => {
     case `#watchlist`: {
       FilmContainer.DEFAULT.innerHTML = ``;
       showFilms();
-      renderFilms(searchFilms(watchList), FilmContainer.DEFAULT);
+      renderFilms(watchList, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
       currentFilteredFilms = watchList.length;
       checkFilmsQuantity();
@@ -137,7 +144,7 @@ const filterFilms = (typeFilter) => {
     case `#history`: {
       FilmContainer.DEFAULT.innerHTML = ``;
       showFilms();
-      renderFilms(searchFilms(watchedFilms), FilmContainer.DEFAULT);
+      renderFilms(watchedFilms, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
       currentFilteredFilms = watchedFilms.length;
       checkFilmsQuantity();
@@ -147,7 +154,7 @@ const filterFilms = (typeFilter) => {
     case `#favorites`: {
       FilmContainer.DEFAULT.innerHTML = ``;
       showFilms();
-      renderFilms(searchFilms(favoritesFilms), FilmContainer.DEFAULT);
+      renderFilms(favoritesFilms, FilmContainer.DEFAULT);
       currentFilter = typeFilter;
       currentFilteredFilms = favoritesFilms.length;
       checkFilmsQuantity();
@@ -379,6 +386,7 @@ const onShowMoreClick = () => {
     currentMaxQuantityFilms += Quantity.MAX_CARDS.DEFAULT;
 
     filterFilms(currentFilter);
+    onInputSearch();
   }
 };
 
@@ -403,14 +411,35 @@ const updateRating = (quantity) => {
   userRating.textContent = rating;
 };
 
-const onSearch = () => {
+const onInputSearch = () => {
   searchValue = search.value;
-  filterFilms(currentFilter);
+
+  if (searchValue) {
+    FilmContainer.DEFAULT.innerHTML = ``;
+    const foundFilms = searchFilms(allFilms);
+    const activeFilter = findActiveFilter(filters);
+
+    if (activeFilter) {
+      activeFilter.changeStatus();
+      filterBeforeSearch = activeFilter;
+    }
+
+    showFilms();
+    renderFilms(foundFilms, FilmContainer.DEFAULT);
+    currentFilteredFilms = foundFilms.length;
+    checkFilmsQuantity();
+
+  } else {
+    filterFilms(currentFilter);
+    if (filterBeforeSearch && !findActiveFilter(filters)) {
+      filterBeforeSearch.changeStatus();
+    }
+  }
+
 };
 
 const startApplication = (films) => {
   allFilms = films;
-
   watchList = allFilms.filter((film) => film.inWatchList);
   watchedFilms = allFilms.filter((film) => film.isWatched);
   favoritesFilms = allFilms.filter((film) => film.isFavorite);
@@ -460,7 +489,8 @@ const startApplication = (films) => {
 
   renderFilters(filters);
   showMore.addEventListener(`click`, onShowMoreClick);
-  search.addEventListener(`input`, onSearch);
+  search.onInputSearch = onInputSearch;
+  renderSearch(search.render());
 };
 
 let allFilms = [];
@@ -471,12 +501,14 @@ let favoritesFilms = [];
 
 let filters = [];
 let currentFilter = `#all`;
+let filterBeforeSearch = null;
 let currentMaxQuantityFilms = Quantity.MAX_CARDS.DEFAULT;
 let currentFilteredFilms = null;
 let currentFilmDetails = null;
 
 let statistic = null;
 
+const search = new Search();
 let searchValue = ``;
 
 addLoadingMessage();

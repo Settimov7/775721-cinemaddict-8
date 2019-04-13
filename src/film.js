@@ -37,8 +37,8 @@ export default class Film extends FilmComponent {
       <p class="film-card__rating">${ this._totalRating }</p>
       <p class="film-card__info">
         <span class="film-card__year">${ moment(this._releaseDate).format(`YYYY`) }</span>
-        <span class="film-card__duration">${ moment.duration(this._duration, `minutes`).hours() }h&nbsp;${ moment.duration(this._duration, `minutes`).minutes() }m</span>
-        <span class="film-card__genre">${ [...this._genres][0] }</span>
+        <span class="film-card__duration">${ moment.duration(this._duration, `minutes`).hours() }:${ moment.duration(this._duration, `minutes`).minutes() }</span>
+        <span class="film-card__genre">${ this._genres.length ? [...this._genres][0] : `` }</span>
       </p>
       <img src="${ this._poster }" alt="${ this._title }" class="film-card__poster">
       <p class="film-card__description">${ this._description }</p>
