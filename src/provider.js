@@ -25,7 +25,7 @@ export default class Provider {
           return item;
         });
     } else {
-      const item = data;
+      const item = data.parseBack();
       this._needSync = true;
       this._store.setItem(item.id, item);
 

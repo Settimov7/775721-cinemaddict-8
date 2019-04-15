@@ -35,6 +35,10 @@ export default class ExtraFilm extends FilmComponent {
     </article>`.trim();
   }
 
+  set onCommentClick(func) {
+    this._onCommentClick = func;
+  }
+
   _onCommentButtonClick(evt) {
     evt.preventDefault();
 
@@ -53,10 +57,6 @@ export default class ExtraFilm extends FilmComponent {
 
   _removeEventListener() {
     this._buttonComments.removeEventListener(`click`, this._onCommentButtonClick);
-  }
-
-  set onCommentClick(func) {
-    this._onCommentClick = func;
   }
 
   _updateElementsVariables() {

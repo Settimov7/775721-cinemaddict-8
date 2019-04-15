@@ -45,6 +45,7 @@ export default class ModelFilm {
         'description': this.description,
         'director': this.director,
         'poster': this.poster,
+        'genre': [...this.genres],
         'release': {
           'date': Date.parse(this.releaseDate),
           'release_country': this.releaseCountry,
@@ -60,6 +61,7 @@ export default class ModelFilm {
         'favorite': !!this.isFavorite,
         'personal_rating': this.rating,
         'watchlist': !!this.inWatchList,
+        'watching_date': Date.parse(this.watchingDate),
       }
     };
   }

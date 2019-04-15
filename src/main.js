@@ -12,7 +12,7 @@ import Search from './search';
 
 const FILMS_PATH = `https://es8-demo-srv.appspot.com/moowle/`;
 const FILMS_URL = `movies`;
-const AUTHORIZATION = `Basic eo0f72h293f9a889a`;
+const AUTHORIZATION = `Basic eo1djsa8dja9a`;
 const STORE_KEY = `films-store-key`;
 
 const filmsApi = new Api({
@@ -172,9 +172,10 @@ const searchFilms = (films) => films.filter((film) => film.title.toLowerCase().i
 const updateFilms = () => {
   FilmContainer.TOP_RATED.innerHTML = ``;
   FilmContainer.MOST_COMMENTED.innerHTML = ``;
+  const cloneFilms = [...allFilms];
 
-  renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
-  renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
+  renderFilms(cloneFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
+  renderFilms(cloneFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
 
   watchList = allFilms.filter((film) => film.inWatchList);
   watchedFilms = allFilms.filter((film) => film.isWatched);
@@ -440,6 +441,8 @@ const onInputSearch = () => {
 
 const startApplication = (films) => {
   allFilms = films;
+  const cloneFilms = [...allFilms];
+
   watchList = allFilms.filter((film) => film.inWatchList);
   watchedFilms = allFilms.filter((film) => film.isWatched);
   favoritesFilms = allFilms.filter((film) => film.isFavorite);
@@ -484,8 +487,8 @@ const startApplication = (films) => {
   updateFilmsCounter(allFilms.length);
   updateRating(watchedFilms.length);
   renderFilms(allFilms, FilmContainer.DEFAULT);
-  renderFilms(allFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
-  renderFilms(allFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
+  renderFilms(cloneFilms.sort(sortFilmsByRating), FilmContainer.TOP_RATED, true);
+  renderFilms(cloneFilms.sort(sortFilmsByComments), FilmContainer.MOST_COMMENTED, true);
 
   renderFilters(filters);
   showMore.addEventListener(`click`, onShowMoreClick);
